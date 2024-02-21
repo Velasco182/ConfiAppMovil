@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_item_inicio"
+        android:title="Inicio"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/home_icon" />
+    <item
+        android:id="@+id/menu_item_Noticias"
+        android:title="Noticias"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/news" />
+    <item
+        android:id="@+id/menu_item_Notificaciones"
+        android:title="Notificaciones"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/notifications" />
+    <item
+        android:id="@+id/menu_item_Perfil"
+        android:title="Perfíl"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/account_group" />
+    <!-- Agregar más elementos de menú según sea necesario -->
+</menu>
