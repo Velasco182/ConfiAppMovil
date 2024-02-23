@@ -1,7 +1,8 @@
-package com.example.pruebaapp
+package com.example.pruebaapp.controllers
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.pruebaapp.R
 import com.example.pruebaapp.fragments.RegistroFragment
 
 class RegistroRContrasenaActivity : AppCompatActivity() {

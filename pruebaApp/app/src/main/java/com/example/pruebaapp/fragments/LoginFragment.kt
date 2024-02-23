@@ -1,21 +1,16 @@
 package com.example.pruebaapp.fragments
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 //import androidx.databinding.DataBindingUtil
-import androidx.viewbinding.ViewBinding
-import com.example.pruebaapp.MainActivity
-import com.example.pruebaapp.R
-import com.example.pruebaapp.RegistroRContrasenaActivity
+import com.example.pruebaapp.controllers.MainActivity
+import com.example.pruebaapp.controllers.RegistroRContrasenaActivity
 import com.example.pruebaapp.data.SharedPreferencesManager
 import com.example.pruebaapp.databinding.FragmentLoginBinding
 
@@ -23,12 +18,6 @@ import com.example.pruebaapp.databinding.FragmentLoginBinding
 //        viewBinding true
 //    }
 //} private lateinit var binding: ResultProfileBinding
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LoginFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LoginFragment : Fragment() {
     //Binding en fragments
     private var _binding : FragmentLoginBinding? = null

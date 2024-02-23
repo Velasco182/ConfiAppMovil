@@ -5,12 +5,14 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/gray</item>
+        <!--<item name="buttonStyle">@style/Widget.AppCompat.Button.Small</item>-->
     </style>
 
     <style name="Theme.PruebaApp" parent="Base.Theme.PruebaApp" >
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/gray</item>
+        <!--<item name="buttonStyle">@style/Widget.AppCompat.Button.Small</item>-->
     </style>
 
     <style name="CustomDialog" parent="Theme.AppCompat.Dialog">

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import com.example.pruebaapp.MainActivity
+import com.example.pruebaapp.controllers.MainActivity
 import com.example.pruebaapp.R
 
 class MenorLoginFragment : Fragment() {

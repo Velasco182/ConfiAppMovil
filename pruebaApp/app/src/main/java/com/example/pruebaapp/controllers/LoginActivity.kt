@@ -1,29 +1,21 @@
-package com.example.pruebaapp
+package com.example.pruebaapp.controllers
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.pruebaapp.R
 import com.example.pruebaapp.fragments.LoginFragment
 import com.example.pruebaapp.fragments.MenorLoginFragment
 import com.google.android.material.tabs.TabLayout
 
-/**
- * The number of pages (wizard steps) to show in this demo.
- */
 private const val NUM_PAGES = 2
 
 class LoginActivity : FragmentActivity() {
 
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally
-     * to access previous and next wizard steps.
-     */
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
     private lateinit var adapter: ScreenSlidePagerAdapter
@@ -94,10 +86,6 @@ class LoginActivity : FragmentActivity() {
         }
     }
 
-    /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
-     */
     private inner class ScreenSlidePagerAdapter(fa: FragmentManager, li: Lifecycle) :
         FragmentStateAdapter(fa, li) {
         override fun getItemCount(): Int {

@@ -1,9 +1,10 @@
-package com.example.pruebaapp
+package com.example.pruebaapp.controllers
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import com.example.pruebaapp.R
 import com.example.pruebaapp.data.SharedPreferencesManager
 
 class SplashActivity : AppCompatActivity() {
