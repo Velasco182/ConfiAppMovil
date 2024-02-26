@@ -56,4 +56,13 @@ class SharedPreferencesManager(private val context: Context) {
     fun saveRegistro(){
 
     }
+
+    fun logOut(){
+        val cerrar = sharedPreferences.edit()
+        cerrar.clear()
+        cerrar.apply()
+
+        ///Cerrar sesión de google
+        //Firebase.auth.signOut()
+    }
 }
