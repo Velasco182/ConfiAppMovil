@@ -194,6 +194,11 @@ class LoginFragment : Fragment() {
             .setAutoSelectEnabled(true)
             .build()
 
+
+
+
+
+
         val googleButton = binding.googleButton
 
         googleButton.setOnClickListener {
