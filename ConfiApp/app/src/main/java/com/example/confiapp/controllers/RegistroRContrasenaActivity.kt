@@ -1,9 +1,9 @@
-package com.example.pruebaapp.controllers
+package com.example.confiapp.controllers
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.pruebaapp.R
-import com.example.pruebaapp.fragments.RegistroFragment
+import com.example.confiapp.R
+import com.example.confiapp.fragments.RegistroFragment
 
 class RegistroRContrasenaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

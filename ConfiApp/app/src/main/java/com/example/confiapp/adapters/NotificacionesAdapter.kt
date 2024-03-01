@@ -1,10 +1,10 @@
-package com.example.pruebaapp.adapters
+package com.example.confiapp.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pruebaapp.databinding.CardViewNotificacionesItemGridBinding
-import com.example.pruebaapp.models.NotificacionesItem
+import com.example.confiapp.databinding.CardViewNotificacionesItemGridBinding
+import com.example.confiapp.models.NotificacionesItem
 
 class NotificacionesAdapter (
     private var notificaciones: List<NotificacionesItem> = emptyList(),

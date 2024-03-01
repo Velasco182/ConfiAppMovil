@@ -1,4 +1,4 @@
-package com.example.pruebaapp.fragments
+package com.example.confiapp.fragments
 
 import android.app.Dialog
 import android.graphics.Color
@@ -9,16 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.example.pruebaapp.R
-import com.example.pruebaapp.databinding.FragmentPerfilBinding
+import com.example.confiapp.R
+import com.example.confiapp.databinding.FragmentPerfilBinding
 
 class PerfilFragment : Fragment() {
 

@@ -1,4 +1,4 @@
-package com.example.pruebaapp.fragments
+package com.example.confiapp.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import com.example.pruebaapp.controllers.MainActivity
-import com.example.pruebaapp.R
+import com.example.confiapp.controllers.MainActivity
+import com.example.confiapp.R
 
 class MenorLoginFragment : Fragment() {
 

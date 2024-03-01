@@ -1,11 +1,11 @@
-package com.example.pruebaapp.controllers
+package com.example.confiapp.controllers
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import com.example.pruebaapp.R
-import com.example.pruebaapp.data.SharedPreferencesManager
+import com.example.confiapp.R
+import com.example.confiapp.data.SharedPreferencesManager
 
 class SplashActivity : AppCompatActivity() {
 

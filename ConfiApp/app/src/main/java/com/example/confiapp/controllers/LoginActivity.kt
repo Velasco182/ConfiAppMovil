@@ -1,4 +1,4 @@
-package com.example.pruebaapp.controllers
+package com.example.confiapp.controllers
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,9 +7,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.pruebaapp.R
-import com.example.pruebaapp.fragments.LoginFragment
-import com.example.pruebaapp.fragments.MenorLoginFragment
+import com.example.confiapp.R
+import com.example.confiapp.fragments.LoginFragment
+import com.example.confiapp.fragments.MenorLoginFragment
 import com.google.android.material.tabs.TabLayout
 
 private const val NUM_PAGES = 2
@@ -80,6 +80,7 @@ class LoginActivity : FragmentActivity() {
             // If the user is currently looking at the first step, allow the system to handle
             // the Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed()
+            finishAffinity()
         } else {
             // Otherwise, select the previous step.
             viewPager.currentItem = viewPager.currentItem - 1

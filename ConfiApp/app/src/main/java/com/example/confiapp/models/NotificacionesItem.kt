@@ -1,3 +1,3 @@
-package com.example.pruebaapp.models
+package com.example.confiapp.models
 
 class NotificacionesItem(var id:Long, var menorImagenNotificaciones: Int, var nombreMenorNotificaciones: String, var mensajeNotificaciones: String, var numeroRutaNotificaciones: String, var responses:List<String>? = null)

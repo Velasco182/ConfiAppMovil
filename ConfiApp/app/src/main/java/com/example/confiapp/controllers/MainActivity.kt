@@ -1,4 +1,4 @@
-package com.example.pruebaapp.controllers
+package com.example.confiapp.controllers
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,13 +10,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.pruebaapp.R
-import com.example.pruebaapp.data.SharedPreferencesManager
-import com.example.pruebaapp.databinding.ActivityMainBinding
-import com.example.pruebaapp.fragments.InicioFragment
-import com.example.pruebaapp.fragments.NoticiasFragment
-import com.example.pruebaapp.fragments.NotificacionesFragment
-import com.example.pruebaapp.fragments.PerfilFragment
+import com.example.confiapp.R
+import com.example.confiapp.data.SharedPreferencesManager
+import com.example.confiapp.databinding.ActivityMainBinding
+import com.example.confiapp.fragments.InicioFragment
+import com.example.confiapp.fragments.NoticiasFragment
+import com.example.confiapp.fragments.NotificacionesFragment
+import com.example.confiapp.fragments.PerfilFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
@@ -135,7 +135,10 @@ class MainActivity : AppCompatActivity() {
             alertDialog.setTitle("¿Cerrar la aplicación?")
             alertDialog.setMessage("¿Estás seguro de que quieres salir de la aplicación?")
             alertDialog.setPositiveButton("Sí") { _, _ ->
-                super.onBackPressed() // Cierra la aplicación
+                super.onBackPressed()
+                // Cierra la aplicación
+                //android.os.Process.killProcess(android.os.Process.myPid())
+                finishAffinity()
             }
             alertDialog.setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss() // Cancela la acción

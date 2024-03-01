@@ -1,14 +1,14 @@
-package com.example.pruebaapp.fragments
+package com.example.confiapp.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pruebaapp.R
-import com.example.pruebaapp.adapters.NoticiasAdapter
-import com.example.pruebaapp.databinding.FragmentNoticiasBinding
-import com.example.pruebaapp.models.NoticiasItem
+import com.example.confiapp.R
+import com.example.confiapp.adapters.NoticiasAdapter
+import com.example.confiapp.databinding.FragmentNoticiasBinding
+import com.example.confiapp.models.NoticiasItem
 
 
 class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {

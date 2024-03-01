@@ -1,4 +1,4 @@
-package com.example.pruebaapp.fragments
+package com.example.confiapp.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pruebaapp.R
-import com.example.pruebaapp.adapters.NotificacionesAdapter
-import com.example.pruebaapp.databinding.FragmentNotificacionesBinding
-import com.example.pruebaapp.models.NotificacionesItem
+import com.example.confiapp.R
+import com.example.confiapp.adapters.NotificacionesAdapter
+import com.example.confiapp.databinding.FragmentNotificacionesBinding
+import com.example.confiapp.models.NotificacionesItem
 
 class NotificacionesFragment : Fragment() {
 

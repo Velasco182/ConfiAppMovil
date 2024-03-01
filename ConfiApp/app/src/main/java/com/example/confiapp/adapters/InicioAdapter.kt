@@ -1,10 +1,10 @@
-package com.example.pruebaapp.adapters
+package com.example.confiapp.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pruebaapp.databinding.CardViewInicioItemGridBinding
-import com.example.pruebaapp.models.InicioItem
+import com.example.confiapp.databinding.CardViewInicioItemGridBinding
+import com.example.confiapp.models.InicioItem
 
 class InicioAdapter (
     private var rutas: List<InicioItem> = emptyList(),

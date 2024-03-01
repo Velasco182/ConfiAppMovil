@@ -1,8 +1,7 @@
-package com.example.pruebaapp.data
+package com.example.confiapp.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.contentValuesOf
 
 class SharedPreferencesManager(private val context: Context) {
 

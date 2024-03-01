@@ -1,4 +1,4 @@
-package com.example.pruebaapp.fragments
+package com.example.confiapp.fragments
 
 import android.app.Dialog
 import android.graphics.Color
@@ -14,14 +14,13 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pruebaapp.R
-import com.example.pruebaapp.adapters.InicioAdapter
-import com.example.pruebaapp.databinding.FragmentInicioBinding
-import com.example.pruebaapp.models.InicioItem
+import com.example.confiapp.R
+import com.example.confiapp.adapters.InicioAdapter
+import com.example.confiapp.databinding.FragmentInicioBinding
+import com.example.confiapp.models.InicioItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 
 class InicioFragment : Fragment() {
 

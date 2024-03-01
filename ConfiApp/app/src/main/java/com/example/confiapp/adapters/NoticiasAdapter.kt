@@ -1,10 +1,10 @@
-package com.example.pruebaapp.adapters
+package com.example.confiapp.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pruebaapp.databinding.CardViewItemGridBinding
-import com.example.pruebaapp.models.NoticiasItem
+import com.example.confiapp.databinding.CardViewItemGridBinding
+import com.example.confiapp.models.NoticiasItem
 
 class NoticiasAdapter (
     private var noticias: List<NoticiasItem> = emptyList(),
