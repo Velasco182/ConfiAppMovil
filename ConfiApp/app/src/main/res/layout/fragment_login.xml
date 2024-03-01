@@ -58,7 +58,7 @@
         android:backgroundTint="@color/gray"
         android:drawableStart="@drawable/googleg_standard_color_18"
         android:drawablePadding="8dp"
-        android:text="Inicia sesión con Google"
+        android:text="Continuar con Google"
         android:textAlignment="center"
         android:textColor="@color/common_google_signin_btn_text_light"
         app:layout_constraintEnd_toEndOf="parent"
