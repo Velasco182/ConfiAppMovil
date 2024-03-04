@@ -60,8 +60,8 @@ class PerfilFragment : Fragment() {
                     val tutor: TutorItem? = response.body()
                     //var listaTutores = tutor!!.results
 
-                    binding.tutorName.text = tutor?.nombres
-                    //binding.correo.text = tutor?.email
+                    binding.tutorName.text = tutor?.name
+                    // binding.correo.text = tutor?.email
 
                 }else{
 

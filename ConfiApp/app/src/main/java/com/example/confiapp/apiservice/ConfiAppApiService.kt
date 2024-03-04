@@ -18,6 +18,7 @@ interface ConfiAppApiService {
 
     @GET("noticias")
     fun getNoticias(): Call<NoticiasRespuesta>
+
     @GET("pokemon/{id}")
     fun getTutor(@Path("id") id: Int): Call<TutorItem>
 

@@ -24,7 +24,7 @@ class NoticiasAdapter (
 
                 Picasso.get()
                     .load(noticiasItem.foto)
-                    .into(binding.icons)
+                    .into(icons)
                 //icons.setImageResource(noticiasItem.image)
                 titulo.text = noticiasItem.nombre
                 descripcion.text = noticiasItem.descripcion

@@ -55,8 +55,6 @@ class RegistroFragment : Fragment() {
         // Asignar el adaptador al Spinner
         spinner.adapter = adapter
 
-
-
         val btnRegistro = binding.confirmarRegistroButton
 
         btnRegistro.setOnClickListener {
@@ -78,7 +76,7 @@ class RegistroFragment : Fragment() {
                     sp = selectedItem
                     Toast.makeText(requireContext(), "Seleccionaste: $selectedItem", Toast.LENGTH_SHORT).show()
 
-                    datosAEnviar = TutorItem(id = 1, nombre, apellido, edad ="20", nacionalidad = "Colombiano", direccion = "Calle13", profesion = "Profesor", email, telefono.toInt(), password, sp, nidentificacion)
+                    datosAEnviar = TutorItem(nombre, apellido, email, telefono.toInt(), password, sp, nidentificacion)
                     lifecycleScope.launch {
                         registrar(datosAEnviar)
                     }
@@ -114,14 +112,14 @@ class RegistroFragment : Fragment() {
                 val tutor = call.body()
                 //var listaTutores = tutor!!.results
 
-                //binding.nombreInput.text = tutor.nombres
+            //binding.nombreInput.text = tutor.nombres
             //binding.correo.text = tutor?.email
 
                 }else{
 
                 }
         } catch (e: Exception){
-
+            Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
         }
 
     }

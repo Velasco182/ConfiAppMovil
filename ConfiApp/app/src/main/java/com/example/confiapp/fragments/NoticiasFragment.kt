@@ -64,7 +64,7 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
         noticiasAdapter.update(listData)*/
 
         val retrofitBuilder = Retrofit.Builder()
-            .baseUrl("https://noticiasapi-d3kl.onrender.com/api/")
+            .baseUrl("https://noticias-api-eosin.vercel.app/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -79,16 +79,12 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
                 response: Response<NoticiasRespuesta>
             ) {
 
-                if (response.isSuccessful) {
-                    val noticias: NoticiasRespuesta? = response.body()
-                    var listaNoticias = noticias!!.results
-
-                    activity?.runOnUiThread {
-                        noticiasAdapter.update(listaNoticias)
-                    }
-
+                val noticias: List<NoticiasItem>? = response.body()?.results
+                if (noticias != null) {
+                    noticiasAdapter.update(noticias)
                 } else {
-                    //Manejar errores
+                // Manejar errores
+                    Toast.makeText(requireContext(), "Error 1", Toast.LENGTH_SHORT).show()
 
                 }
             }
