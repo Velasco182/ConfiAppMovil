@@ -7,8 +7,15 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.NoticiasAdapter
+import com.example.confiapp.apiservice.ConfiAppApiService
+import com.example.confiapp.apiservice.NoticiasRespuesta
 import com.example.confiapp.databinding.FragmentNoticiasBinding
 import com.example.confiapp.models.NoticiasItem
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
@@ -43,7 +50,7 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
     }
 
     private fun loadData() {
-        val listData = listOf(
+        /*val listData = listOf(
             NoticiasItem(1, R.drawable.thumbnail, "Pepito Galindez", "Perdido el día 14 de febrero, visto por última vez en San Eduardo, usaba una camisa blanca, si lo haz visto deja tu comentario o comunícate al 3225421368"),
             NoticiasItem(2, R.drawable.thumbnail, "Juanito, Marce y Ana", "Última vez vistos juntos el sábado pasado en el parque central. Si tienes información sobre su paradero, por favor comunícate al 3225421368."),
             NoticiasItem(3, R.drawable.thumbnail, "Camila", "Desapareció el martes por la tarde cerca del colegio. Se le vio por última vez con uniforme escolar. Cualquier información, por favor contáctanos al 3225421368."),
@@ -54,7 +61,44 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
             NoticiasItem(8, R.drawable.thumbnail, "Carlos", "Desapareció el miércoles por la tarde en el parque de diversiones. Se le vio por última vez cerca de los juegos mecánicos. Si lo has visto, por favor comunícate al 3225421368.")
         )
 
-        noticiasAdapter.update(listData)
+        noticiasAdapter.update(listData)*/
+
+        val retrofitBuilder = Retrofit.Builder()
+            .baseUrl("https://noticiasapi-d3kl.onrender.com/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofitBuilder.create(ConfiAppApiService::class.java)
+
+        val call = service.getNoticias() //Consulta el pokemon por ID
+
+        call.enqueue(object : Callback<NoticiasRespuesta> {
+
+            override fun onResponse(
+                call: Call<NoticiasRespuesta>,
+                response: Response<NoticiasRespuesta>
+            ) {
+
+                if (response.isSuccessful) {
+                    val noticias: NoticiasRespuesta? = response.body()
+                    var listaNoticias = noticias!!.results
+
+                    activity?.runOnUiThread {
+                        noticiasAdapter.update(listaNoticias)
+                    }
+
+                } else {
+                    //Manejar errores
+
+                }
+            }
+
+            override fun onFailure(call: Call<NoticiasRespuesta>, t: Throwable) {
+                //Manejar errores de la red
+                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+            }
+
+        })
 
     }
 

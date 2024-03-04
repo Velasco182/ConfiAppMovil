@@ -16,7 +16,14 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.confiapp.R
+import com.example.confiapp.apiservice.ConfiAppApiService
 import com.example.confiapp.databinding.FragmentPerfilBinding
+import com.example.confiapp.models.TutorItem
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class PerfilFragment : Fragment() {
 
@@ -36,6 +43,38 @@ class PerfilFragment : Fragment() {
         // Inflate the layout for this fragment // Implemnetación de databinding en fragments
         binding = FragmentPerfilBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        //Retofit
+        val retrofitBuilder = Retrofit.Builder()
+            .baseUrl("https://pokeapi.co/api/v2/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofitBuilder.create(ConfiAppApiService::class.java)
+
+        val call = service.getTutor(6)
+
+        call.enqueue(object : Callback<TutorItem> {
+            override fun onResponse(call: Call<TutorItem>,
+                                    response: Response<TutorItem>){
+
+                if (response.isSuccessful){
+
+                    val tutor: TutorItem? = response.body()
+                    //var listaTutores = tutor!!.results
+
+                    binding.tutorName.text = tutor?.name
+                    //binding.correo.text = tutor?.email
+
+                }else{
+
+                }
+            }
+
+            override fun onFailure(call: Call<TutorItem>, t: Throwable) {
+
+            }
+        })
 
         val agregarMenor = binding.agregarMenor
 
@@ -112,48 +151,5 @@ class PerfilFragment : Fragment() {
             }
         }
     }
-
-
-    /*private fun showAlertDialog(): AlertDialog{
-        val builder = AlertDialog.Builder(requireContext())
-
-        val dialogLayout = layoutInflater.inflate(R.layout.registro_menor_dialog_layout, null)
-
-        ///Pasar el view de registrar menor al alertDialog
-        builder.setView(dialogLayout)
-        builder.setTitle("Agregar Menor")
-        builder.setMessage("Ingrese los datos del nuevo Menor")
-        builder.setPositiveButton("Guardar") {  dialog, which  ->
-
-            val nombreMenor = dialogLayout.findViewById<EditText>(R.id.nombreMenorInput)
-            val apellidoMenor = dialogLayout.findViewById<EditText>(R.id.apellidoMenorInput)
-
-
-            val numeroDocumentoMenor = dialogLayout.findViewById<EditText>(R.id.numeroDocumentoMenorInput)
-            val edadMenor = dialogLayout.findViewById<EditText>(R.id.edadMenorInput)
-            val telefonoMenor = dialogLayout.findViewById<EditText>(R.id.telefonoMenorInput)
-            val correoMenor = dialogLayout.findViewById<EditText>(R.id.correoMenorInput)
-            //val confirmarRegistroMenor = dialogLayout.findViewById<EditText>(R.id.confirmarRegistroMenorButton)
-
-
-            val nombreM = nombreMenor.text.toString()
-            val apellidoM = apellidoMenor.text.toString()
-
-
-            val numeroDocumentoM = numeroDocumentoMenor.text.toString()
-            val edadM = edadMenor.text.toString()
-            val telefonoM = telefonoMenor.text.toString()
-            val correoM = correoMenor.text.toString()
-
-            dialog.dismiss() // Cancela la acción
-            Toast.makeText(requireContext(), "Menor Guardado", Toast.LENGTH_SHORT).show()
-        }
-
-        builder.setNegativeButton("Cancelar") { dialog, which ->
-            dialog.dismiss() // Cancela la acción
-        }
-
-        return builder.create()
-    }*/
 
 }

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confiapp.databinding.CardViewItemGridBinding
 import com.example.confiapp.models.NoticiasItem
+import com.squareup.picasso.Picasso
 
 class NoticiasAdapter (
     private var noticias: List<NoticiasItem> = emptyList(),
@@ -21,9 +22,12 @@ class NoticiasAdapter (
         fun render(noticiasItem: NoticiasItem, addComment: (String) -> Unit) {
             binding.apply {
 
-                icons.setImageResource(noticiasItem.image)
-                titulo.text = noticiasItem.name
-                descripcion.text = noticiasItem.description
+                Picasso.get()
+                    .load(noticiasItem.foto)
+                    .into(binding.icons)
+                //icons.setImageResource(noticiasItem.image)
+                titulo.text = noticiasItem.nombre
+                descripcion.text = noticiasItem.descripcion
 
                 button.setOnClickListener {
 

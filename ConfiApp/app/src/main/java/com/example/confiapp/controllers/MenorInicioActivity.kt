@@ -37,9 +37,5 @@ class MenorInicioActivity : AppCompatActivity() {
             cardView.visibility = View.INVISIBLE
         }
 
-        if (super.onBackPressed() ==){
-
-        }
-
     }
 }
