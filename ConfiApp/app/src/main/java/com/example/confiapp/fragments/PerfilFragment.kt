@@ -31,9 +31,6 @@ class PerfilFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
     }
 
     override fun onCreateView(
@@ -63,7 +60,7 @@ class PerfilFragment : Fragment() {
                     val tutor: TutorItem? = response.body()
                     //var listaTutores = tutor!!.results
 
-                    binding.tutorName.text = tutor?.name
+                    binding.tutorName.text = tutor?.nombres
                     //binding.correo.text = tutor?.email
 
                 }else{
