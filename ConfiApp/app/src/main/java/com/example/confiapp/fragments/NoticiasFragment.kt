@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.NoticiasAdapter
 import com.example.confiapp.apiservice.ConfiAppApiService
-import com.example.confiapp.apiservice.NoticiasRespuesta
+import com.example.confiapp.models.NoticiasRespuesta
 import com.example.confiapp.databinding.FragmentNoticiasBinding
 import com.example.confiapp.models.NoticiasItem
 import retrofit2.Call
@@ -72,26 +72,31 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
 
         val call = service.getNoticias() //Consulta el pokemon por ID
 
-        call.enqueue(object : Callback<NoticiasRespuesta> {
+        call.enqueue(object : Callback<List<NoticiasItem>> {
 
             override fun onResponse(
-                call: Call<NoticiasRespuesta>,
-                response: Response<NoticiasRespuesta>
+                call: Call<List<NoticiasItem>>,
+                response: Response<List<NoticiasItem>>
             ) {
+                if (response.isSuccessful) {
+                val noticias: List<NoticiasItem>? = response.body()
 
-                val noticias: List<NoticiasItem>? = response.body()?.results
-                if (noticias != null) {
-                    noticiasAdapter.update(noticias)
+                    if (noticias != null) {
+                        noticiasAdapter.update(noticias)
+                        //Toast.makeText(requireContext(), "El consumido es${response.body()}", Toast.LENGTH_SHORT).show()
+
+                    }
                 } else {
                 // Manejar errores
-                    Toast.makeText(requireContext(), "Error 1", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Errorr es$response", Toast.LENGTH_SHORT).show()
 
                 }
             }
 
-            override fun onFailure(call: Call<NoticiasRespuesta>, t: Throwable) {
+            override fun onFailure(call: Call<List<NoticiasItem>>, t: Throwable) {
                 //Manejar errores de la red
                 Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                println(t)
             }
 
         })

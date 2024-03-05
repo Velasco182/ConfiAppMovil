@@ -2,6 +2,8 @@ package com.example.confiapp.apiservice
 
 // 🡇🡇 RESPECTIVAS IMPORTACIONES 🡇🡇
 
+import com.example.confiapp.models.NoticiasItem
+import com.example.confiapp.models.RegistroRespuesta
 import com.example.confiapp.models.TutorItem
 import retrofit2.Call
 import retrofit2.Response
@@ -17,7 +19,7 @@ interface ConfiAppApiService {
     //@GET("pokemon")
 
     @GET("noticias")
-    fun getNoticias(): Call<NoticiasRespuesta>
+    fun getNoticias(): Call<List<NoticiasItem>>
 
     @GET("pokemon/{id}")
     fun getTutor(@Path("id") id: Int): Call<TutorItem>

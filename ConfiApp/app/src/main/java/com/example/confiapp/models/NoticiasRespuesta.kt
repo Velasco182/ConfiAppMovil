@@ -1,4 +1,4 @@
-package com.example.confiapp.apiservice
+package com.example.confiapp.models
 
 import com.example.confiapp.models.NoticiasItem
 
