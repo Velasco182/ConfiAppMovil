@@ -18,7 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
+class NoticiasFragment : Fragment(R.layout.fragment_noticias) {
 
     private lateinit var binding: FragmentNoticiasBinding
     private lateinit var noticiasAdapter: NoticiasAdapter
@@ -32,7 +32,7 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
     }
 
     private fun initUI() {
-        noticiasAdapter = NoticiasAdapter( addComment = { data -> addCommentFunction(data) })
+        noticiasAdapter = NoticiasAdapter(addComment = { data -> addCommentFunction(data) })
         initList()
         loadData()
     }
@@ -79,16 +79,18 @@ class NoticiasFragment  : Fragment(R.layout.fragment_noticias) {
                 response: Response<List<NoticiasItem>>
             ) {
                 if (response.isSuccessful) {
-                val noticias: List<NoticiasItem>? = response.body()
-
+                    val noticias: List<NoticiasItem>? = response.body()
                     if (noticias != null) {
                         noticiasAdapter.update(noticias)
                         //Toast.makeText(requireContext(), "El consumido es${response.body()}", Toast.LENGTH_SHORT).show()
-
+                    }else{
+                        Toast.makeText(requireContext(), "No hay noticias", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else {
-                // Manejar errores
-                    Toast.makeText(requireContext(), "Errorr es$response", Toast.LENGTH_SHORT).show()
+                    // Manejar errores
+                    Toast.makeText(requireContext(), "Errorr es$response", Toast.LENGTH_SHORT)
+                        .show()
 
                 }
             }
