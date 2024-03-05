@@ -28,7 +28,7 @@
         <activity
             android:screenOrientation="portrait"
             android:name=".controllers.RegistroRContrasenaActivity"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:screenOrientation="portrait"
@@ -44,7 +44,8 @@
         <activity
             android:screenOrientation="portrait"
             android:name=".controllers.LoginActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:screenOrientation="portrait"
@@ -54,7 +55,8 @@
         <activity
             android:screenOrientation="portrait"
             android:name=".controllers.MenorInicioActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"/>
 
         <meta-data
             android:name="preloaded_fonts"
