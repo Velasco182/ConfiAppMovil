@@ -48,7 +48,7 @@ class PerfilFragment : Fragment() {
             .build()
 
         val service = retrofitBuilder.create(ConfiAppApiService::class.java)
-
+        /*
         val call = service.getTutor(6)
 
         call.enqueue(object : Callback<TutorItem> {
@@ -71,7 +71,7 @@ class PerfilFragment : Fragment() {
             override fun onFailure(call: Call<TutorItem>, t: Throwable) {
 
             }
-        })
+        })*/
 
         val agregarMenor = binding.agregarMenor
 

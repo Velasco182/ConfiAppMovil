@@ -14,17 +14,20 @@ import retrofit2.http.Path
 
 interface ConfiAppApiService {
 
-    // fun
-
-    //@GET("pokemon")
+    data class ResponseApi(
+        val message:ArrayList<String>
+    )
 
     @GET("noticias")
     fun getNoticias(): Call<List<NoticiasItem>>
 
-    @GET("pokemon/{id}")
-    fun getTutor(@Path("id") id: Int): Call<TutorItem>
+    /*@GET("pokemon/{id}")
+    fun getTutor(@Path("id") id: Int): Call<TutorItem>*/
 
     @POST("register")
-    fun postTutor(@Body tutor: TutorItem): Response<RegistroRespuesta>
+    suspend fun postTutor(@Body tutor: TutorItem): ResponseApi//void es para no esperar ninguna respuesta
+
+    /*@POST("register")
+    fun postTutor(@Body tutor: TutorItem): Response<RegistroRespuesta>*/
 
 }

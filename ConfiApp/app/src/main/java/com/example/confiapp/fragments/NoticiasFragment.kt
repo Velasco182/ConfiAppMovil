@@ -64,7 +64,7 @@ class NoticiasFragment : Fragment(R.layout.fragment_noticias) {
         noticiasAdapter.update(listData)*/
 
         val retrofitBuilder = Retrofit.Builder()
-            .baseUrl("https://noticias-api-eosin.vercel.app/api/")
+            .baseUrl("https://nuevomern-7y1b.onrender.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
