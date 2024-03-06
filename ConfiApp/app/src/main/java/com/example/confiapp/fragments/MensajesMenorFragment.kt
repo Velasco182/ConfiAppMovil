@@ -1,22 +1,18 @@
 package com.example.confiapp.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.example.confiapp.R
+
 class MensajesMenorFragment : Fragment(), OnBackPressedListener {
     override fun onBackPressed(): Boolean {
         // Este fragmento también podría manejar onBackPressed de manera personalizada
         // Si este fragmento no necesita manejar el evento, simplemente devuelve false
         mostrarFragmento(MenorInicioFragment())
         return true
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -28,9 +24,9 @@ class MensajesMenorFragment : Fragment(), OnBackPressedListener {
     }
 
     private fun mostrarFragmento(nuevoFragmento: Fragment) {
-        val transaccion = fragmentManager?.beginTransaction()
-        transaccion?.replace(R.id.menorFragmentContainer, nuevoFragmento)
-        transaccion?.addToBackStack(null)
-        transaccion?.commit()
+        val transaccion = requireFragmentManager().beginTransaction()
+        transaccion.replace(R.id.menorFragmentContainer, nuevoFragmento)
+        transaccion.addToBackStack(null)
+        transaccion.commit()
     }
 }
