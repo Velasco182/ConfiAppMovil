@@ -113,14 +113,7 @@ class RegistroFragment : Fragment() {
         val password = binding.contrasenaInput.text.toString()
         val nidentificacion = binding.numeroDocumentoInput.text.toString()
 
-        val data = TutorItem(
-            nombres = nombre,
-            apellidos = apellido,
-            email = email,
-            telefono = telefono,
-            password = password,
-            tipoIdentificacion = "cedula",
-            numerodeIdentificacion = nidentificacion)
+        val data = TutorItem(nombre, apellido, email, telefono, password, "cedula", nidentificacion)
 
         // Llamamos a la función insertarDatos en ApiManager de forma asincrónica con GlobalScope
         lifecycleScope.launch(Dispatchers.Main){
