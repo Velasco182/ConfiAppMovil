@@ -31,7 +31,8 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView6" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView6"
+                app:layout_constraintVertical_bias="0.173" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView6"
@@ -52,6 +53,29 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
+                android:id="@+id/rutaActiva"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Ruta Activa"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.64"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/inicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Inicio:"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/estimado"
+                app:layout_constraintTop_toBottomOf="@+id/estimado" />
+
+            <TextView
                 android:id="@+id/hora"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,22 +86,8 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/estimado"
-                app:layout_constraintTop_toBottomOf="@+id/numeroRutaNotificaciones" />
-
-            <TextView
-                android:id="@+id/horaRuta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/hora"
-                app:layout_constraintTop_toBottomOf="@+id/numeroRuta"
-                tools:text="3:00 PM" />
+                app:layout_constraintTop_toBottomOf="@+id/numeroRutaNotificaciones"
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/numeroRutaNotificaciones"
@@ -91,51 +101,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/destino" />
 
             <TextView
-                android:id="@+id/numeroRuta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:gravity="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/numeroRutaNotificaciones"
-                app:layout_constraintTop_toBottomOf="@+id/pDestinoRuta"
-                tools:text="123" />
-
-            <TextView
-                android:id="@+id/rutaActiva"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Ruta Activa"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/estimado"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Tiempo Estimado:"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/rutaActiva"
-                app:layout_constraintTop_toBottomOf="@+id/rutaActiva" />
-
-            <TextView
-                android:id="@+id/inicio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Inicio:"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/estimado"
-                app:layout_constraintTop_toBottomOf="@+id/estimado" />
-
-            <TextView
                 android:id="@+id/destino"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -146,18 +111,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/inicio" />
 
             <TextView
-                android:id="@+id/estimadoRuta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="20 mins"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/estimado"
-                app:layout_constraintTop_toBottomOf="@+id/rutaActiva" />
-
-            <TextView
                 android:id="@+id/pInicioRuta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -166,8 +119,53 @@
                 android:layout_marginEnd="8dp"
                 android:text="Sena"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.467"
                 app:layout_constraintStart_toEndOf="@+id/inicio"
                 app:layout_constraintTop_toBottomOf="@+id/estimadoRuta" />
+
+            <TextView
+                android:id="@+id/horaRuta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.463"
+                app:layout_constraintStart_toEndOf="@+id/hora"
+                app:layout_constraintTop_toBottomOf="@+id/numeroRuta"
+                app:layout_constraintVertical_bias="1.0"
+                tools:text="3:00 PM" />
+
+            <TextView
+                android:id="@+id/numeroRuta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.478"
+                app:layout_constraintStart_toEndOf="@+id/numeroRutaNotificaciones"
+                app:layout_constraintTop_toBottomOf="@+id/pDestinoRuta"
+                tools:text="123" />
+
+            <TextView
+                android:id="@+id/estimadoRuta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="20 mins"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.465"
+                app:layout_constraintStart_toEndOf="@+id/estimado"
+                app:layout_constraintTop_toBottomOf="@+id/rutaActiva" />
 
             <TextView
                 android:id="@+id/pDestinoRuta"
@@ -178,8 +176,19 @@
                 android:layout_marginEnd="8dp"
                 android:text="Centro"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.46"
                 app:layout_constraintStart_toEndOf="@+id/destino"
                 app:layout_constraintTop_toBottomOf="@+id/pInicioRuta" />
+
+            <TextView
+                android:id="@+id/estimado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Tiempo Estimado:"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/rutaActiva"
+                app:layout_constraintTop_toBottomOf="@+id/rutaActiva" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

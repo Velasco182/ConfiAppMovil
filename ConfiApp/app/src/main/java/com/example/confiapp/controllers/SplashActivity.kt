@@ -6,15 +6,24 @@ import android.os.Bundle
 import android.os.Handler
 import com.example.confiapp.R
 import com.example.confiapp.data.SharedPreferencesManager
+import io.socket.client.IO
+import io.socket.client.Socket
 
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var sharedPref: SharedPreferencesManager
 
+    private lateinit var mSocket: Socket
+
     private val SPLASH_TIME_OUT: Long = 1500 // 1,5 segundos de demora
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        val opts = IO.Options()
+        opts.reconnectionAttempts = 10
+        mSocket = IO.socket("ws://localhost:3000", opts)
+        mSocket.connect()
 
         sharedPref = SharedPreferencesManager(this)
 

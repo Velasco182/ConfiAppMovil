@@ -1,5 +1,6 @@
 package com.example.confiapp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.NotificacionesAdapter
 import com.example.confiapp.databinding.FragmentNotificacionesBinding
+import com.example.confiapp.databinding.ViewChatBinding
 import com.example.confiapp.models.NotificacionesItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -43,9 +45,8 @@ class NotificacionesFragment : Fragment() {
     }
 
     private fun initUI() {
-        notificacionesAdapter = NotificacionesAdapter { data ->
-            Toast.makeText(requireContext(), data, Toast.LENGTH_SHORT).show()
-        }
+        notificacionesAdapter = NotificacionesAdapter(addComment = { addComment(it) },
+            loadAlertChat = { loadAlert(it) })
 
         binding.rcvNotificaciones.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -55,9 +56,55 @@ class NotificacionesFragment : Fragment() {
         loadData()
     }
 
+    private fun addComment(stringData: String) {
+
+    }
+
+    private fun loadAlert(data: NotificacionesItem) {
+        val alert = AlertDialog.Builder(requireContext())
+        val view = ViewChatBinding.inflate(layoutInflater)
+        alert.setView(view.root)
+        view.apply {
+
+            btnSend.setOnClickListener {
+                var isComplete = true
+
+                val listInput = listOf(edtMessages)
+
+                listInput.forEach {
+                    if (it.text.isEmpty()) {
+                        it.setError("No content messages")
+                        isComplete = false
+                    } else {
+                        it.setError(null)
+                    }
+                }
+
+                if (isComplete) {
+                    var data = edtMessages.text.toString()
+                    sendMessagesData(data)
+                }
+            }
+
+
+        }
+        alert.show()
+    }
+
+    private fun sendMessagesData(messages: String) {
+
+    }
+
+
     private fun loadData() {
         val notificacionesList = listOf(
-            NotificacionesItem(1, R.drawable.thumbnail, "Pepito", "Desvío en campanario", "Ruta: 1"),
+            NotificacionesItem(
+                1,
+                R.drawable.thumbnail,
+                "Pepito",
+                "Desvío en campanario",
+                "Ruta: 1"
+            ),
             NotificacionesItem(2, R.drawable.thumbnail, "Juanito", "Desvío en el Sena", "Ruta: 2")
         )
 

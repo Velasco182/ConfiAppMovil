@@ -8,6 +8,7 @@ import com.example.confiapp.models.NotificacionesItem
 
 class NotificacionesAdapter(
     private var notificaciones: List<NotificacionesItem> = emptyList(),
+    private var loadAlertChat : (NotificacionesItem) -> Unit,
     private val addComment: (String) -> Unit
 ) : RecyclerView.Adapter<NotificacionesAdapter.NotificacionesHolder>() {
 
@@ -19,12 +20,20 @@ class NotificacionesAdapter(
     inner class NotificacionesHolder(private val binding: CardViewNotificacionesItemGridBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun render(notificacionesItem: NotificacionesItem) {
+        fun render(
+            notificacionesItem: NotificacionesItem,
+            addComment: (String) -> Unit,
+            loadAlertChat: (NotificacionesItem) -> Unit
+        ) {
             binding.apply {
                 menorImagenNotificaciones.setImageResource(notificacionesItem.menorImagenNotificaciones)
                 nombreMenorNotificaciones.text = notificacionesItem.nombreMenorNotificaciones
                 mensajeNotificaciones.text = notificacionesItem.mensajeNotificaciones
                 numeroRutaNotificaciones.text = notificacionesItem.numeroRutaNotificaciones
+
+                cardView6.setOnClickListener {
+                    loadAlertChat(notificacionesItem)
+                }
 
                 descartarNotificacionButton.setOnClickListener {
                     addComment(numeroRutaNotificaciones.text.toString())
@@ -49,6 +58,6 @@ class NotificacionesAdapter(
     override fun getItemCount(): Int = notificaciones.size
 
     override fun onBindViewHolder(holder: NotificacionesHolder, position: Int) {
-        holder.render(notificaciones[position])
+        holder.render(notificaciones[position], addComment, loadAlertChat)
     }
 }
