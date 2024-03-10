@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
+import android.provider.Settings.Global.putString
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,10 +15,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import com.example.confiapp.R
+import com.example.confiapp.apiservice.ConfiAppApiClient
+import com.example.confiapp.apiservice.ConfiAppApiManager
+import com.example.confiapp.apiservice.ConfiAppApiService
 import com.example.confiapp.controllers.MainActivity
 import com.example.confiapp.controllers.RegistroRContrasenaActivity
 import com.example.confiapp.data.SharedPreferencesManager
 import com.example.confiapp.databinding.FragmentLoginBinding
+import com.example.confiapp.models.TutorLoginItem
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -26,8 +31,10 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 ///Binding: Primero modficar el bluid.gradle (Module:app) y dentro de android  al final buildFeatures {
 //        viewBinding true
@@ -40,19 +47,23 @@ class LoginFragment : Fragment() {
     ///sharedPreferences
     private lateinit var sharedPre: SharedPreferencesManager
 
+    private lateinit var apiManager: ConfiAppApiManager
+
     private lateinit var activity: Activity
 
-
+    //Google Login
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
     private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
     private var showOneTapUI = true
 
     lateinit var  buttonOpenActivity : Button
+
     /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
     }*/
+
     //Firebase google auth
     private lateinit var auth: FirebaseAuth
 
@@ -142,12 +153,15 @@ class LoginFragment : Fragment() {
 
         // ---> Para activities se usa así
         sharedPre = SharedPreferencesManager(requireContext())
+
         val userrrr = sharedPre.getUser()
         val boolll = sharedPre.getBool()
 
         Toast.makeText(activity, boolll.toString(), Toast.LENGTH_SHORT).show()
         Toast.makeText(activity, userrrr, Toast.LENGTH_SHORT).show()
 
+        // Creación del ApiService
+        apiManager = ConfiAppApiManager(ConfiAppApiClient.createApiService())
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
@@ -155,20 +169,29 @@ class LoginFragment : Fragment() {
 
         val buttonOpenRegisterActivity = binding.registroButton
 
-        val user = binding.userInput
-        val pass = binding.passInput
+        //val user = binding.userInput
+        //val pass = binding.passInput
 
         buttonOpenActivity = binding.inicioButton
 
         buttonOpenActivity.setOnClickListener {
-            val u = user.text.toString()
-            val p = pass.text.toString()
+
+            //val u = user.text.toString()
+            //val p = pass.text.toString()
 
             // ---> Guardar datos del usuario con SharedPreferences para Activities
-            sharedPre.saveUser(u, p)
-            sharedPre.saveBool()
+            //sharedPre.saveUser(u, p)
+            //sharedPre.saveBool()
 
-            validar(u, p)
+            //validar(u, p)/
+
+            // OBTENER LOS DATOS INSERTADOS DEL FORMULARIO DE REGISTRO
+
+            val email = binding.userInput.text.toString()
+            val password = binding.passInput.text.toString()
+
+            // Iniciar sesión
+            iniciarSesion(email, password)
         }
 
         buttonOpenRegisterActivity.setOnClickListener {
@@ -193,10 +216,6 @@ class LoginFragment : Fragment() {
             // Automatically sign in when exactly one credential is retrieved.
             .setAutoSelectEnabled(true)
             .build()
-
-
-
-
 
 
         val googleButton = binding.googleButton
@@ -234,6 +253,7 @@ class LoginFragment : Fragment() {
 
             val intent = Intent(activity, MainActivity::class.java)
             //intent.putExtra("user", u)
+
             startActivity(intent)
 
         }else{
@@ -244,9 +264,71 @@ class LoginFragment : Fragment() {
 
     }
 
-    enum class ProviderType{
-        BASIC,
-        GOOGLE
+    private fun iniciarSesion(email: String, password: String) {
+
+        //val token = usartoken
+
+        // Crear una instancia de LoginData con los datos insertados en el formulario
+        val data = TutorLoginItem(email, password)
+
+        // LLamar a la función iniciarSesion en ApiManager de forma asincrona con lifecycleScope
+        apiManager.insertarLogin(data, object : Callback<ConfiAppApiService.LoginResponse> {
+            override fun onResponse(
+                call: Call<ConfiAppApiService.LoginResponse>,
+                response: Response<ConfiAppApiService.LoginResponse>
+            ) {
+                if (response.isSuccessful) {
+                    // Si la respuesta es exitosa
+                    val result = response.body()
+                    Toast.makeText(
+                        requireContext(),
+                        "Datos insertados correctamente: $result",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val intent = Intent(activity, MainActivity::class.java)
+                    //intent.putExtra("user", u)
+                    sharedPre.saveUser(email, password)
+                    startActivity(intent)
+
+                    // Guardar los datos del usuario en SharedPreferences
+                    /*if (result?.message.toString() == "true" || sharedPre.saveBool().toString() == "true"){
+                        Toast.makeText(
+                            requireContext(),
+                            "True",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }else{
+                        Toast.makeText(
+                            requireContext(),
+                            "False",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }*/
+
+                } else {
+                    // Si obtenemos una respuesta del servidor pero no es exitosa (p.ej., error 404, 500)
+                    Toast.makeText(
+                        requireContext(),
+                        "Respuesta no exitosa: ${response.errorBody()?.string()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ConfiAppApiService.LoginResponse>, t: Throwable) {
+                // Error al realizar la llamada (p.ej., sin conexión)
+                Toast.makeText(
+                    requireContext(),
+                    "Error al iniciar sesión: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+
     }
 
 }

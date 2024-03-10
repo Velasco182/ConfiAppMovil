@@ -5,6 +5,7 @@ package com.example.confiapp.apiservice
 import com.example.confiapp.models.NoticiasItem
 import com.example.confiapp.models.RegistroRespuesta
 import com.example.confiapp.models.TutorItem
+import com.example.confiapp.models.TutorLoginItem
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -18,16 +19,18 @@ interface ConfiAppApiService {
         val message:ArrayList<String>
     )
 
+    data class LoginResponse(
+        //val success: Boolean,
+        val message: ArrayList<String>,
+        val token: String?,
+        val userId: String?
+    )
+
     @GET("noticias")
     fun getNoticias(): Call<List<NoticiasItem>>
-
-    /*@GET("pokemon/{id}")
-    fun getTutor(@Path("id") id: Int): Call<TutorItem>*/
-
     @POST("register")
-    suspend fun postTutor(@Body tutor: TutorItem): ResponseApi//void es para no esperar ninguna respuesta
-
-    /*@POST("register")
-    fun postTutor(@Body tutor: TutorItem): Response<RegistroRespuesta>*/
+    fun postTutor(@Body tutor: TutorItem): Call<ResponseApi> // Ajuste para usar Call
+    @POST("login")
+    fun postTutorLogin(@Body tutorLogin: TutorLoginItem): Call<LoginResponse>
 
 }

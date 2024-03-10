@@ -1,21 +1,15 @@
 package com.example.confiapp.controllers
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.example.confiapp.R
 import com.example.confiapp.databinding.ActivityMenorInicioBinding
-import com.example.confiapp.fragments.LoginFragment
 import com.example.confiapp.fragments.MenorInicioFragment
-import com.example.confiapp.fragments.MensajesMenorFragment
-import com.example.confiapp.fragments.OnBackPressedListener
-import com.example.confiapp.fragments.PerfilFragment
+import com.example.confiapp.helpers.OnBackPressedListener
 
 class MenorInicioActivity : AppCompatActivity() {
 

@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.confiapp.R
 import com.example.confiapp.apiservice.ConfiAppApiService
+import com.example.confiapp.data.SharedPreferencesManager
 import com.example.confiapp.databinding.FragmentPerfilBinding
 import com.example.confiapp.models.TutorItem
 import retrofit2.Call
@@ -29,6 +30,7 @@ class PerfilFragment : Fragment() {
 
     private lateinit var binding: FragmentPerfilBinding
 
+    private lateinit var sharedPre: SharedPreferencesManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -41,14 +43,18 @@ class PerfilFragment : Fragment() {
         binding = FragmentPerfilBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        // ---> Para activities se usa así
+        sharedPre = SharedPreferencesManager(requireContext())
+
         //Retofit
+
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://pokeapi.co/api/v2/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
-        val service = retrofitBuilder.create(ConfiAppApiService::class.java)
         /*
+        val service = retrofitBuilder.create(ConfiAppApiService::class.java)
+
         val call = service.getTutor(6)
 
         call.enqueue(object : Callback<TutorItem> {
@@ -72,6 +78,10 @@ class PerfilFragment : Fragment() {
 
             }
         })*/
+        val name = binding.tutorName
+        val nombre = sharedPre.getUser()
+
+        name.text = nombre
 
         val agregarMenor = binding.agregarMenor
 

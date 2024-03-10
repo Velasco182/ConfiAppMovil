@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 
 class SharedPreferencesManager(private val context: Context) {
 
-    private val name_DB = "myDataBase"
+    private val name_DB = "ConfiApp"
 
     private val sharedPreferences : SharedPreferences by lazy {
         ///Solamente para el teléfono en el que se esta usando la aplicación (nombre de la db y el segundo el modo en que se va a manejar la base de datos)

@@ -1,30 +1,23 @@
 package com.example.confiapp.fragments
 
-import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
-import com.example.confiapp.R
 import com.example.confiapp.apiservice.ConfiAppApiClient
 import com.example.confiapp.apiservice.ConfiAppApiManager
 import com.example.confiapp.apiservice.ConfiAppApiService
+import com.example.confiapp.controllers.LoginActivity
 import com.example.confiapp.databinding.FragmentRegistroBinding
 import com.example.confiapp.models.TutorItem
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class RegistroFragment : Fragment() {
 
@@ -113,35 +106,70 @@ class RegistroFragment : Fragment() {
         val password = binding.contrasenaInput.text.toString()
         val nidentificacion = binding.numeroDocumentoInput.text.toString()
 
-        val data = TutorItem(nombre, apellido, email, telefono, password, "cedula", nidentificacion)
+        //val data = TutorItem(nombre, apellido, email, telefono, password, "cedula", nidentificacion)
 
-        // Llamamos a la función insertarDatos en ApiManager de forma asincrónica con GlobalScope
-        lifecycleScope.launch(Dispatchers.Main){
-            try {
-                // Enviamos los datos al servidor
-                val result = apiManager.insertarDatos(data)
-                Log.e(TAG, "${result}", )
+        val data = TutorItem(
+            "user",
+            nombre,
+            apellido,
+            email,
+            telefono,
+            password,
+            "cedula",
+            nidentificacion
+        )
 
-                Log.i(TAG, "Solicitud POST exitosa, ${result}")
+        // Ahora llamamos a insertarDatos con un callback
+        apiManager.insertarDatos(data, object : Callback<ConfiAppApiService.ResponseApi> {
+            override fun onResponse(
+                call: Call<ConfiAppApiService.ResponseApi>,
+                response: Response<ConfiAppApiService.ResponseApi>
+            ) {
+                if (response.isSuccessful) {
+                    // Si la respuesta es exitosa
+                    val result = response.body()
+                    Toast.makeText(
+                        requireContext(),
+                        "Datos insertados correctamente: $result",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                // Manejar respuesta exitosa, por ejemplo, mostrar un mensaje al usuario
+                    activity?.runOnUiThread {
+                        // Tu código para limpiar y navegar aquí
+
+                        binding.nombreInput.text?.clear()
+                        binding.apellidoInput.text?.clear()
+                        binding.numeroDocumentoInput.text?.clear()
+                        binding.edadInput.text?.clear()
+                        binding.telefonoInput.text?.clear()
+                        binding.correoInput.text?.clear()
+                        binding.contrasenaInput.text?.clear()
+                        binding.confirmarCInput.text?.clear()
+
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        startActivity(intent)
+                        activity?.finish()
+                    }
+
+                } else {
+                    // Si obtenemos una respuesta del servidor pero no es exitosa (p.ej., error 404, 500)
+                    Toast.makeText(
+                        requireContext(),
+                        "Respuesta no exitosa: ${response.errorBody()?.string()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ConfiAppApiService.ResponseApi>, t: Throwable) {
+                // Error al realizar la llamada (p.ej., sin conexión)
                 Toast.makeText(
                     requireContext(),
-                    "Datos insertados correctamente",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            } catch (e: Exception) {
-                Log.e(TAG, "Error al procesar la solicitud POST: ${e.message}")
-
-                // Manejar errores, por ejemplo, mostrar un mensaje de error al usuario
-                Toast.makeText(
-                    requireContext(),
-                    "Error al insertar datos: ${e.message}",
+                    "Error al insertar datos: ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }
+        })
 
     }
 

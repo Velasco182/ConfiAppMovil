@@ -1,20 +1,17 @@
 package com.example.confiapp.apiservice
 
-import android.util.Log
-import android.widget.Toast
 import com.example.confiapp.models.TutorItem
+import com.example.confiapp.models.TutorLoginItem
+import retrofit2.Callback
 
 class ConfiAppApiManager(private val apiService: ConfiAppApiService) {
 
-    // Creamos una clase que actúa como un administrador para realizar solicitudes a la API.
-    suspend fun insertarDatos(userDataList: TutorItem): ConfiAppApiService.ResponseApi? {
-        return try {
+    fun insertarDatos(userDataList: TutorItem, callback: Callback<ConfiAppApiService.ResponseApi>) {
+        // Llamada a la API usando Retrofit con un callback
+        apiService.postTutor(userDataList).enqueue(callback)
+    }
 
-            val result = apiService.postTutor(userDataList)
-            Log.e("TAG", "de: ${result} ")
-            result
-        } catch (e: Exception) {
-            null
-        }
+    fun insertarLogin(userDataList: TutorLoginItem, callback: Callback<ConfiAppApiService.LoginResponse>){
+        apiService.postTutorLogin(userDataList).enqueue(callback)
     }
 }

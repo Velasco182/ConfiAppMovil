@@ -1,12 +1,18 @@
 package com.example.confiapp.fragments
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.example.confiapp.R
 import com.example.confiapp.databinding.FragmentMenorInicioBinding
+import com.example.confiapp.helpers.Llamadas
+import com.example.confiapp.helpers.OnBackPressedListener
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -34,6 +40,10 @@ class MenorInicioFragment : Fragment(R.layout.fragment_menor_inicio), OnBackPres
         val mensajeButton = binding.mensajeMenorButton
 
         val fragmentMensajes = MensajesMenorFragment()
+
+        llamarButton.setOnClickListener {
+            Llamadas.makePhoneCall(this, "1234567890")
+        }
 
         mensajeButton.setOnClickListener {
             mostrarFragmento(fragmentMensajes)

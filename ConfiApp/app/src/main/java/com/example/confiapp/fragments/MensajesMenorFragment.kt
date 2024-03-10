@@ -6,7 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.confiapp.R
-class MensajesMenorFragment : Fragment(), OnBackPressedListener {
+import com.example.confiapp.databinding.FragmentMenorInicioBinding
+import com.example.confiapp.databinding.FragmentMensajesMenorBinding
+import com.example.confiapp.helpers.Llamadas
+import com.example.confiapp.helpers.OnBackPressedListener
+
+class MensajesMenorFragment : Fragment(R.layout.fragment_mensajes_menor), OnBackPressedListener {
+
+    private lateinit var binding: FragmentMensajesMenorBinding
     override fun onBackPressed(): Boolean {
         // Este fragmento también podría manejar onBackPressed de manera personalizada
         // Si este fragmento no necesita manejar el evento, simplemente devuelve false
@@ -19,12 +26,16 @@ class MensajesMenorFragment : Fragment(), OnBackPressedListener {
 
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mensajes_menor, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentMensajesMenorBinding.bind(view)
+
+        val llamarButton = binding.llamarTutorButton
+
+        llamarButton.setOnClickListener {
+            Llamadas.makePhoneCall(this, "1234567890")
+        }
+
     }
 
     private fun mostrarFragmento(nuevoFragmento: Fragment) {
