@@ -26,15 +26,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />-->
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPagerPrincipal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigationBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-        <!--</ScrollView>-->
+    <!--</ScrollView>-->
     <!--<androidx.cardview.widget.CardView
         android:id="@+id/cardViewMenu"
         android:layout_width="wrap_content"
@@ -42,6 +34,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">-->
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerPrincipal"
+        android:layout_width="419dp"
+        android:layout_height="575dp"
+        app:layout_constraintBottom_toTopOf="@+id/navigationBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.545"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
@@ -54,6 +57,15 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
+
+    <Button
+        android:id="@+id/botonagregar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Agregar Ruta"
+        app:layout_constraintBottom_toTopOf="@+id/navigationBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPagerPrincipal" />
 
     <!--</androidx.cardview.widget.CardView>-->
 
