@@ -25,9 +25,9 @@ private const val NUM_PAGES = 4
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var cadena: String;
-    var cadena2 = "";
-    val miConst = "Esto es una cadena.";
+    //lateinit var cadena: String;
+    //var cadena2 = "";
+    //val miConst = "Esto es una cadena.";
     private lateinit var sharedPre: SharedPreferencesManager
 
     // Write a message to the database
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         viewPager = binding.viewPagerPrincipal
         viewPager.isUserInputEnabled = true
 
-        Toast.makeText(this, "Hola Mundo", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Bienvenido Tutor", Toast.LENGTH_SHORT).show()
 
         //val valor = sharedPre.getUser()
         //intent.getBooleanExtra() Para pasar booleanos

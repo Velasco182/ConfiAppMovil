@@ -3,15 +3,12 @@ package com.example.confiapp.apiservice
 // 🡇🡇 RESPECTIVAS IMPORTACIONES 🡇🡇
 
 import com.example.confiapp.models.NoticiasItem
-import com.example.confiapp.models.RegistroRespuesta
 import com.example.confiapp.models.TutorItem
 import com.example.confiapp.models.TutorLoginItem
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 interface ConfiAppApiService {
 

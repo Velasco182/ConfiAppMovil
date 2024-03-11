@@ -23,6 +23,7 @@ import com.example.confiapp.controllers.RegistroRContrasenaActivity
 import com.example.confiapp.data.SharedPreferencesManager
 import com.example.confiapp.databinding.FragmentLoginBinding
 import com.example.confiapp.models.TutorLoginItem
+import com.example.confiapp.models.TutorRespuesta
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -32,6 +33,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -280,6 +282,10 @@ class LoginFragment : Fragment() {
                 if (response.isSuccessful) {
                     // Si la respuesta es exitosa
                     val result = response.body()
+                    //Asigancion del token
+                    //val token = result?.token
+                    //val details = Gson().toJson(token)
+
                     Toast.makeText(
                         requireContext(),
                         "Datos insertados correctamente: $result",
@@ -289,6 +295,13 @@ class LoginFragment : Fragment() {
                     val intent = Intent(activity, MainActivity::class.java)
                     //intent.putExtra("user", u)
                     sharedPre.saveUser(email, password)
+
+                    //sharedPre.saveTutorResponse()
+                    sharedPre.saveBool()
+
+
+
+
                     startActivity(intent)
 
                     // Guardar los datos del usuario en SharedPreferences

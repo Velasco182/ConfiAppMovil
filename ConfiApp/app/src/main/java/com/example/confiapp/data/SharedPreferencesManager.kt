@@ -1,7 +1,13 @@
 package com.example.confiapp.data
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import android.widget.Toast
+import com.example.confiapp.models.TutorItem
+import com.example.confiapp.models.TutorRespuesta
+import com.google.gson.Gson
 
 class SharedPreferencesManager(private val context: Context) {
 
@@ -13,7 +19,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     // Función para almacenar los datos
-    fun saveUser(user: String, pass: String){
+    fun saveUser(user: String, pass: String, ){//token: String
 
         //Asignar una edición al SharedPreferences (editar)
         val editor = sharedPreferences.edit()
@@ -21,10 +27,44 @@ class SharedPreferencesManager(private val context: Context) {
         //Asignar el Token o Clave
         editor.putString("saveUser", user)
         editor.putString("savePass", pass)
+        //editor.putString("saveToken", token)
 
         //Aplicar cambios
-        editor.apply()
+        val success = editor.commit() // Cambiado a commit() para verificar si la operación de escritura tiene éxito
+        if (!success) {
+            // Manejo de errores: la operación de escritura falló
+            Toast.makeText(context, "Error SharedPreferences", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "Error al guardar los datos del usuario y el token en SharedPreferences")
+        }else{
+            editor.apply()
+        }
 
+    }
+
+    fun saveTutorResponse(tutorItem: TutorItem){
+        val json = Gson().toJson(tutorItem)
+        val editor = sharedPreferences.edit()
+        editor.putString("tutorDetails", json)
+
+        //Aplicar cambios
+        val success = editor.commit() // Cambiado a commit() para verificar si la operación de escritura tiene éxito
+        if (!success) {
+            // Manejo de errores: la operación de escritura falló
+            Toast.makeText(context, "Error SharedPreferences", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "Error al guardar los datos del usuario y el token en SharedPreferences")
+        }else{
+            editor.apply()
+        }
+    }
+
+    // Función para obtener la respuesta del tutor guardada en SharedPreferences
+    fun getTutorResponse(): TutorRespuesta? {
+        val json = sharedPreferences.getString("tutorDetails", null)
+        if (json != null) {
+            val gson = Gson()
+            return gson.fromJson(json, TutorRespuesta::class.java)
+        }
+        return null
     }
 
     fun saveBool(){
@@ -38,6 +78,11 @@ class SharedPreferencesManager(private val context: Context) {
 
         // Retornar la clave que identifica el contenido de las SharedPreferences
         return sharedPreferences.getString("saveUser", "Empty").toString()
+    }
+
+    //Obtener Token
+    fun getToken(): String{
+        return  sharedPreferences.getString("token", "Empty").toString()
     }
 
     fun getPass(): String{
@@ -64,4 +109,5 @@ class SharedPreferencesManager(private val context: Context) {
         ///Cerrar sesión de google
         //Firebase.auth.signOut()
     }
+
 }
