@@ -2,7 +2,9 @@ package com.example.confiapp.controllers
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -11,19 +13,44 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.confiapp.R
+import com.example.confiapp.apiservice.ConfiAppApiService
+import com.example.confiapp.apiservice.RouteResponse
 import com.example.confiapp.data.SharedPreferencesManager
 import com.example.confiapp.databinding.ActivityMainBinding
 import com.example.confiapp.fragments.InicioFragment
 import com.example.confiapp.fragments.NoticiasFragment
 import com.example.confiapp.fragments.NotificacionesFragment
 import com.example.confiapp.fragments.PerfilFragment
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolygonOptions
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.CallAdapter
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 private const val NUM_PAGES = 4
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
+
+    private lateinit var map: GoogleMap
+   // private lateinit var buttonRuta: Button
+
+    private var star: String = ""
+    private var end: String = ""
+
+    var poly: Polyline? = null
 
     //lateinit var cadena: String;
     //var cadena2 = "";
@@ -33,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     // Write a message to the database
     val database = Firebase.database
     val myRef = database.getReference("message")
+
 
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var viewPager: ViewPager2
@@ -52,11 +80,38 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        // Inflar el layout del diálogo
+        val dialogView = layoutInflater.inflate(R.layout.crear_mapa_dialog_layout, null)
+
         bottomNavigationView = binding.navigationBar
         viewPager = binding.viewPagerPrincipal
         viewPager.isUserInputEnabled = true
 
         Toast.makeText(this, "Bienvenido Tutor", Toast.LENGTH_SHORT).show()
+
+        val buttonRuta = dialogView.findViewById<Button>(R.id.guardarRutaButton)
+        buttonRuta.setOnClickListener {
+            star = ""
+            end = ""
+            poly?.remove()
+            poly = null
+            Toast.makeText(this, "Selecciona Punto de Origen y Final", Toast.LENGTH_SHORT).show()
+            if (::map.isInitialized) {
+                map.setOnMapClickListener {
+                    if (star.isEmpty()) {
+                        // "12345645678915"
+                        star = "${it.longitude},${it.latitude} "
+                    } else if (end.isNotEmpty()) {
+                        star = "${it.longitude},${it.latitude} "
+                        createRoute()
+                    }
+                }
+            }
+        }
+
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.cardMapa) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
 
         //val valor = sharedPre.getUser()
         //intent.getBooleanExtra() Para pasar booleanos
@@ -90,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
         ///Para sincronizar el viewPager y el bottomNavigationView
 
-        viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 val menuItem = bottomNavigationView.menu.getItem(position)
@@ -144,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss() // Cancela la acción
             }
             alertDialog.show()
-        }else {
+        } else {
             // Otherwise, select the previous step.
             viewPager.currentItem = viewPager.currentItem - 1
         }
@@ -184,4 +239,49 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Éste método se llama cuando el mapa se haya cargado
+    override fun onMapReady(map: GoogleMap) {
+        this.map = map
+    }
+
+    private fun createRoute() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = getRetrofit().create(ConfiAppApiService::class.java)
+                .getRoute("5b3ce3597851110001cf62482012481d44b14326904e25820054ec73", star, end)
+            if (call.isSuccessful) {
+                drawRoute(call.body())
+            } else {
+                Log.i("aris", "KO")
+            }
+        }
+    }
+
+    private fun drawRoute(routeResponse: RouteResponse?) {
+        val polylineOptions = PolygonOptions()
+        routeResponse?.features?.first()?.geometry?.coordinates?.forEach {
+            polylineOptions.add(LatLng(it[1], it[0]))
+        }
+        runOnUiThread {
+            poly = map.addPolyline(polylineOptions)
+        }
+
+    }
+
+    private fun getRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://api.openrouteservice.org/")
+            .addCallAdapterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
 }
+
+private fun Retrofit.Builder.addCallAdapterFactory(create: GsonConverterFactory): Retrofit.Builder {
+    return addCallAdapterFactory(create)
+}
+
+private fun GoogleMap.addPolyline(polylineOptions: PolygonOptions): Polyline {
+    return addPolyline(polylineOptions)
+}
+
+
