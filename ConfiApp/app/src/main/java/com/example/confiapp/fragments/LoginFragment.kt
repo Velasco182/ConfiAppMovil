@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.provider.Settings.Global.putString
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,7 +22,6 @@ import com.example.confiapp.controllers.RegistroRContrasenaActivity
 import com.example.confiapp.data.SharedPreferencesManager
 import com.example.confiapp.databinding.FragmentLoginBinding
 import com.example.confiapp.models.TutorLoginItem
-import com.example.confiapp.models.TutorRespuesta
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -283,7 +281,7 @@ class LoginFragment : Fragment() {
                     // Si la respuesta es exitosa
                     val result = response.body()
                     //Asigancion del token
-                    //val token = result?.token
+                    //val token = result?.message
                     //val details = Gson().toJson(token)
 
                     Toast.makeText(
@@ -292,15 +290,13 @@ class LoginFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
 
+                    //val token = result?.token
+
                     val intent = Intent(activity, MainActivity::class.java)
                     //intent.putExtra("user", u)
                     sharedPre.saveUser(email, password)
-
-                    //sharedPre.saveTutorResponse()
+                    //sharedPre.saveTutorResponse(result)
                     sharedPre.saveBool()
-
-
-
 
                     startActivity(intent)
 

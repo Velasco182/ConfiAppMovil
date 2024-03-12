@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
-import com.example.confiapp.models.TutorItem
+import com.example.confiapp.apiservice.ConfiAppApiService
 import com.example.confiapp.models.TutorRespuesta
 import com.google.gson.Gson
 
@@ -19,7 +19,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     // Función para almacenar los datos
-    fun saveUser(user: String, pass: String, ){//token: String
+    fun saveUser(user: String, pass: String){//, token: String
 
         //Asignar una edición al SharedPreferences (editar)
         val editor = sharedPreferences.edit()
@@ -41,8 +41,8 @@ class SharedPreferencesManager(private val context: Context) {
 
     }
 
-    fun saveTutorResponse(tutorItem: TutorItem){
-        val json = Gson().toJson(tutorItem)
+    fun saveTutorResponse(tutorRespuesta: ConfiAppApiService.LoginResponse?){
+        val json = Gson().toJson(tutorRespuesta)
         val editor = sharedPreferences.edit()
         editor.putString("tutorDetails", json)
 
@@ -53,16 +53,16 @@ class SharedPreferencesManager(private val context: Context) {
             Toast.makeText(context, "Error SharedPreferences", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Error al guardar los datos del usuario y el token en SharedPreferences")
         }else{
-            editor.apply()
+            //editor.apply()
         }
     }
 
     // Función para obtener la respuesta del tutor guardada en SharedPreferences
-    fun getTutorResponse(): TutorRespuesta? {
+    fun getTutorResponse(): ConfiAppApiService.LoginResponse? {
         val json = sharedPreferences.getString("tutorDetails", null)
         if (json != null) {
             val gson = Gson()
-            return gson.fromJson(json, TutorRespuesta::class.java)
+            return gson.fromJson(json, ConfiAppApiService.LoginResponse::class.java)
         }
         return null
     }
@@ -97,9 +97,6 @@ class SharedPreferencesManager(private val context: Context) {
 
     // Crear función para obtener los datos del registro y así poder ingresar en el Inicio de Sesión
     // (Usuario o Cédula & Contraseña)
-    fun saveRegistro(){
-
-    }
 
     fun logOut(){
         val cerrar = sharedPreferences.edit()
