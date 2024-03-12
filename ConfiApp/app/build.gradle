@@ -40,6 +40,8 @@ android {
 
 dependencies {
 
+    //Corutinas
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     //DataBinding
     implementation 'androidx.databinding:databinding-runtime:8.3.0'
     /*Dependencias para usar maps*/
