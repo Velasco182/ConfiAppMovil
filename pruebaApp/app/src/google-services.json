@@ -1,14 +1,13 @@
 {
   "project_info": {
-    "project_number": "71488544657",
-    "firebase_url": "https://pruebaangelaynicole-default-rtdb.firebaseio.com",
-    "project_id": "pruebaangelaynicole",
-    "storage_bucket": "pruebaangelaynicole.appspot.com"
+    "project_number": "190230562279",
+    "project_id": "pruebaapp-ec05f",
+    "storage_bucket": "pruebaapp-ec05f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:71488544657:android:ac62f879a8e4f1212bc430",
+        "mobilesdk_app_id": "1:190230562279:android:89730514d4833ab3e1a942",
         "android_client_info": {
           "package_name": "com.example.pruebaapp"
         }
@@ -16,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBPQ5_CBZeYp59BlmKstA5g6xD62flFPyk"
+          "current_key": "AIzaSyASXyi5huwFblX1g5wXkRmxBd9UMvGd-ow"
         }
       ],
       "services": {
