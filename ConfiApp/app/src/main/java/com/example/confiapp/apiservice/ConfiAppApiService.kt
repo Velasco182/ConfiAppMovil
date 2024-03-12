@@ -2,6 +2,7 @@ package com.example.confiapp.apiservice
 
 // 🡇🡇 RESPECTIVAS IMPORTACIONES 🡇🡇
 
+import com.example.confiapp.models.InicioItem
 import com.example.confiapp.models.NoticiasItem
 import com.example.confiapp.models.TutorItem
 import com.example.confiapp.models.TutorLoginItem
@@ -25,6 +26,10 @@ interface ConfiAppApiService {
 
     @GET("noticias")
     fun getNoticias(): Call<List<NoticiasItem>>
+
+    @GET("tasks")
+    fun getRutas(): Call<List<InicioItem>>
+
     @POST("register")
     fun postTutor(@Body tutor: TutorItem): Call<ResponseApi> // Ajuste para usar Call
     @POST("login")

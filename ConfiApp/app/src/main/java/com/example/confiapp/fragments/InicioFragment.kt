@@ -16,16 +16,25 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.InicioAdapter
+import com.example.confiapp.apiservice.ConfiAppApiClient
+import com.example.confiapp.apiservice.ConfiAppApiManager
 import com.example.confiapp.databinding.FragmentInicioBinding
 import com.example.confiapp.models.InicioItem
+import com.example.confiapp.models.NoticiasItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class InicioFragment : Fragment() {
 
     private lateinit var binding: FragmentInicioBinding
     private lateinit var inicioAdapter: InicioAdapter
+
+    private lateinit var apiManager: ConfiAppApiManager
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,12 +59,14 @@ class InicioFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //binding = FragmentInicioBinding.bind(view)
+
         initUI()
 
     }
 
     private fun initUI() {
-        inicioAdapter = InicioAdapter(addComment = {data -> addCommentFunction(data)})
+        inicioAdapter = InicioAdapter(addComment = { data -> addCommentFunction(data) })
         initList()
         loadData()
     }
@@ -72,17 +83,54 @@ class InicioFragment : Fragment() {
     }
 
     private fun loadData() {
-        val rutasList = listOf(
-            InicioItem(1, R.drawable.thumbnail, "Pepito ", "10 mins",
-                "San Eduardo", "Campanario", "4567", "10:00 PM"),
-            InicioItem(1, R.drawable.thumbnail, "Juanito", "15 mins",
-                "Centro", "Sena", "7890", "2:00 PM")
+        /*val rutasList = listOf(
+            InicioItem(
+                1, R.drawable.thumbnail, "Pepito ", "10 mins",
+                "San Eduardo", "Campanario", "4567", "10:00 PM"
+            ),
+            InicioItem(
+                1, R.drawable.thumbnail, "Juanito", "15 mins",
+                "Centro", "Sena", "7890", "2:00 PM"
+            )
 
-        )
+        )*/
 
-        inicioAdapter.update(rutasList)
+        // Creación del ApiService
+        apiManager = ConfiAppApiManager(ConfiAppApiClient.createApiService())
+
+        apiManager.mostrarHistorial(object : Callback<List<InicioItem>> {
+
+            override fun onResponse(
+                call: Call<List<InicioItem>>,
+                response: Response<List<InicioItem>>
+            ) {
+                if (response.isSuccessful) {
+                    val rutas: List<InicioItem>? = response.body()
+                    if (rutas != null) {
+                        inicioAdapter.update(rutas)
+                        //Toast.makeText(requireContext(), "El consumido es${response.body()}", Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(requireContext(), "No hay rutas", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else {
+                    // Manejar errores
+                    Toast.makeText(requireContext(), "Errorr es$response", Toast.LENGTH_SHORT)
+                        .show()
+
+                }
+            }
+
+            override fun onFailure(call: Call<List<InicioItem>>, t: Throwable) {
+                //Manejar errores de la red
+                Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                println(t)
+            }
+
+        })
+
+        //inicioAdapter.update(rutasList)
     }
-
 
 
     class MapsDialogFragment : DialogFragment() {
@@ -96,9 +144,11 @@ class InicioFragment : Fragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            dialog.window?.attributes?.windowAnimations = R.style.CustomDialog // Opcional: para animaciones personalizadas
+            dialog.window?.attributes?.windowAnimations =
+                R.style.CustomDialog // Opcional: para animaciones personalizadas
             return dialog
         }
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,

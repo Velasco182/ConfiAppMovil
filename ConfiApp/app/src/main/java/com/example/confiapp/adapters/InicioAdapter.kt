@@ -5,23 +5,28 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confiapp.databinding.CardViewInicioItemGridBinding
 import com.example.confiapp.models.InicioItem
+import com.squareup.picasso.Picasso
 
-class InicioAdapter (
+class InicioAdapter(
     private var rutas: List<InicioItem> = emptyList(),
     private var addComment: (String) -> Unit
-) : RecyclerView.Adapter<InicioAdapter.InicioHolder>(){
+) : RecyclerView.Adapter<InicioAdapter.InicioHolder>() {
 
-    fun update(newDataInicio: List<InicioItem>){
+    fun update(newDataInicio: List<InicioItem>) {
         rutas = newDataInicio
         notifyDataSetChanged()
     }
-    inner class InicioHolder(var binding: CardViewInicioItemGridBinding):
-        RecyclerView.ViewHolder(binding.root){
 
-        fun render(inicioItem: InicioItem, addComment: (String) -> Unit){
+    inner class InicioHolder(var binding: CardViewInicioItemGridBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun render(inicioItem: InicioItem, addComment: (String) -> Unit) {
             binding.apply {
 
-                menorImage.setImageResource(inicioItem.menorImage)
+                Picasso.get()
+                    .load(inicioItem.menorImage)
+                    .into(menorImage)
+                //menorImage.setImageResource(inicioItem.menorImage)
                 menorName.text = inicioItem.menorName
                 estimadoRuta.text = inicioItem.estimadoRuta
                 pInicioRuta.text = inicioItem.inicioRuta
@@ -29,7 +34,7 @@ class InicioAdapter (
                 numeroRuta.text = inicioItem.numeroRuta
                 horaRuta.text = inicioItem.horaRuta
 
-                cardRuta.setOnClickListener{
+                cardRuta.setOnClickListener {
 
                     val numero = numeroRuta.text.toString()
 
@@ -43,7 +48,7 @@ class InicioAdapter (
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InicioHolder {
-        return  InicioHolder(
+        return InicioHolder(
             CardViewInicioItemGridBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent, false

@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.NoticiasAdapter
+import com.example.confiapp.apiservice.ConfiAppApiClient
+import com.example.confiapp.apiservice.ConfiAppApiManager
 import com.example.confiapp.apiservice.ConfiAppApiService
 import com.example.confiapp.models.NoticiasRespuesta
 import com.example.confiapp.databinding.FragmentNoticiasBinding
@@ -22,6 +24,9 @@ class NoticiasFragment : Fragment(R.layout.fragment_noticias) {
 
     private lateinit var binding: FragmentNoticiasBinding
     private lateinit var noticiasAdapter: NoticiasAdapter
+
+    private lateinit var apiManager: ConfiAppApiManager
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +68,7 @@ class NoticiasFragment : Fragment(R.layout.fragment_noticias) {
 
         noticiasAdapter.update(listData)*/
 
-        val retrofitBuilder = Retrofit.Builder()
+        /*val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://nuevomern-7y1b.onrender.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -71,8 +76,12 @@ class NoticiasFragment : Fragment(R.layout.fragment_noticias) {
         val service = retrofitBuilder.create(ConfiAppApiService::class.java)
 
         val call = service.getNoticias() //Consulta el pokemon por ID
+        */
 
-        call.enqueue(object : Callback<List<NoticiasItem>> {
+        // Creación del ApiService
+        apiManager = ConfiAppApiManager(ConfiAppApiClient.createApiService())
+
+        apiManager.mostrarNoticias(object : Callback<List<NoticiasItem>> {
 
             override fun onResponse(
                 call: Call<List<NoticiasItem>>,

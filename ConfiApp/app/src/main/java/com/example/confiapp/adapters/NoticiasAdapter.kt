@@ -7,7 +7,7 @@ import com.example.confiapp.databinding.CardViewItemGridBinding
 import com.example.confiapp.models.NoticiasItem
 import com.squareup.picasso.Picasso
 
-class NoticiasAdapter (
+class NoticiasAdapter(
     private var noticias: List<NoticiasItem> = emptyList(),
     private var addComment: (String) -> Unit
 ) : RecyclerView.Adapter<NoticiasAdapter.NoticiasHolder>() {
@@ -33,7 +33,7 @@ class NoticiasAdapter (
 
                     val editText = editText.text.toString()
 
-                    if (editText.isNotEmpty()){
+                    if (editText.isNotEmpty()) {
 
                         addComment(editText)
 

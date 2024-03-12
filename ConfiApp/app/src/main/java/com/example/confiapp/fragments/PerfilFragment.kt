@@ -48,36 +48,6 @@ class PerfilFragment : Fragment() {
 
         //Retofit
 
-        val retrofitBuilder = Retrofit.Builder()
-            .baseUrl("https://pokeapi.co/api/v2/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        /*
-        val service = retrofitBuilder.create(ConfiAppApiService::class.java)
-
-        val call = service.getTutor(6)
-
-        call.enqueue(object : Callback<TutorItem> {
-            override fun onResponse(call: Call<TutorItem>,
-                                    response: Response<TutorItem>){
-
-                if (response.isSuccessful){
-
-                    val tutor: TutorItem? = response.body()
-                    //var listaTutores = tutor!!.results
-
-                    binding.tutorName.text = tutor?.name
-                    // binding.correo.text = tutor?.email
-
-                }else{
-
-                }
-            }
-
-            override fun onFailure(call: Call<TutorItem>, t: Throwable) {
-
-            }
-        })*/
         val name = binding.tutorName
         val nombre = sharedPre.getUser()
 
