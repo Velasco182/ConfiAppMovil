@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.NoticiasAdapter
 import com.example.confiapp.apiservice.ConfiAppApiService
-import com.example.confiapp.models.NoticiasRespuesta
 import com.example.confiapp.databinding.FragmentNoticiasBinding
 import com.example.confiapp.models.NoticiasItem
 import retrofit2.Call

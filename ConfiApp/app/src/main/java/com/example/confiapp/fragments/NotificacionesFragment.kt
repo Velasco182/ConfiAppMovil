@@ -1,113 +1,140 @@
 package com.example.confiapp.fragments
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.confiapp.R
-import com.example.confiapp.adapters.NotificacionesAdapter
-import com.example.confiapp.databinding.FragmentNotificacionesBinding
-import com.example.confiapp.databinding.ViewChatBinding
-import com.example.confiapp.models.NotificacionesItem
+import com.example.confiapp.adapters.adaptersChat.ChatAdapter
+import com.example.confiapp.models.RetrofitInstance
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.gson.Gson
+import com.google.ai.client.generativeai.Chat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
-class NotificacionesFragment : Fragment() {
+class NotificacionesFragment : AppCompatActivity() {
+    private lateinit var binding: ViewChatBinding
+    private lateinit var firebaseUser: FirebaseUser
+    private lateinit var reference: DatabaseReference
+    private lateinit var chatList: MutableList<Chat>
 
-    private lateinit var binding: FragmentNotificacionesBinding
-    private lateinit var notificacionesAdapter: NotificacionesAdapter
-    private lateinit var auth: FirebaseAuth
-    private lateinit var databaseReference: DatabaseReference
-    private lateinit var currentUserId: String
-    private lateinit var chatRef: DatabaseReference
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ViewChatBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentNotificacionesBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        chatList = mutableListOf()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.chatRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
 
-        auth = FirebaseAuth.getInstance()
-        currentUserId = auth.currentUser?.uid ?: ""
-        databaseReference = FirebaseDatabase.getInstance().reference
-        chatRef = FirebaseDatabase.getInstance().reference.child("chats")
+        chatRecyclerView = findViewById(R.id.chatRecyclerView)
+        chatRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
 
-        initUI()
-    }
+        edtMessages = findViewById(R.id.edtMessages)
+        btnSendMessage = findViewById(R.id.btnSendMessage)
 
-    private fun initUI() {
-        notificacionesAdapter = NotificacionesAdapter(addComment = { addComment(it) },
-            loadAlertChat = { loadAlert(it) })
 
-        binding.rcvNotificaciones.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = notificacionesAdapter
+
+
+        firebaseUser = FirebaseAuth.getInstance().currentUser
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
+
+
+
+
+        reference!!.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                val user = snapshot.getValue(User::class.java)
+                tvUserName.text = user!!.userName
+                if (user.profileImage == "") {
+                    imgProfile.setImageResource(R.drawable.profile_image)
+                } else {
+                    Glide.with(this@ChatActivity).load(user.profileImage).into(imgProfile)
+                }
+            }
+        })
+
+        btnSendMessage.setOnClickListener {
+            var message: String = etMessage.text.toString()
+
+            if (message.isEmpty()) {
+                Toast.makeText(applicationContext, "message is empty", Toast.LENGTH_SHORT).show()
+                etMessage.setText("")
+            } else {
+                sendMessage(firebaseUser!!.uid, userId, message)
+                etMessage.setText("")
+                topic = "/topics/$userId"
+                PushNotification(NotificationData( userName!!,message),
+                    topic).also {
+                    sendNotification(it)
+                }
+
+            }
         }
 
-        loadData()
+        readMessage(firebaseUser!!.uid, userId)
     }
 
-    private fun addComment(stringData: String) {
+    private fun sendMessage(senderId: String, receiverId: String, message: String) {
+        var reference: DatabaseReference? = FirebaseDatabase.getInstance().getReference()
 
+        var hashMap: HashMap<String, String> = HashMap()
+        hashMap["senderId"] = senderId
+        hashMap["receiverId"] = receiverId
+        hashMap["message"] = message
+
+        reference!!.child("Chat").push().setValue(hashMap)
     }
 
-    private fun loadAlert(data: NotificacionesItem) {
-        val alert = AlertDialog.Builder(requireContext())
-        val view = ViewChatBinding.inflate(layoutInflater)
-        alert.setView(view.root)
-        view.apply {
+    fun readMessage(senderId: String, receiverId: String) {
+        val databaseReference: DatabaseReference =
+            FirebaseDatabase.getInstance().getReference("Chat")
 
-            btnSend.setOnClickListener {
-                var isComplete = true
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
 
-                val listInput = listOf(edtMessages)
+            override fun onDataChange(snapshot: DataSnapshot) {
+                chatList.clear()
+                for (dataSnapShot: DataSnapshot in snapshot.children) {
+                    val chat = dataSnapShot.getValue(Chat::class.java)
 
-                listInput.forEach {
-                    if (it.text.isEmpty()) {
-                        it.setError("No content messages")
-                        isComplete = false
-                    } else {
-                        it.setError(null)
+                    if (chat!!.senderId.equals(senderId) && chat!!.receiverId.equals(receiverId) ||
+                        chat!!.senderId.equals(receiverId) && chat!!.receiverId.equals(senderId)
+                    ) {
+                        chatList.add(chat)
                     }
                 }
 
-                if (isComplete) {
-                    var data = edtMessages.text.toString()
-                    sendMessagesData(data)
-                }
+                val chatAdapter = ChatAdapter(this@ChatActivity, chatList)
+
+                chatRecyclerView.adapter = chatAdapter
             }
+        })
+    }
 
-
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d("TAG", "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e("TAG", response.errorBody()!!.string())
+            }
+        } catch(e: Exception) {
+            Log.e("TAG", e.toString())
         }
-        alert.show()
     }
 
-    private fun sendMessagesData(messages: String) {
-
-    }
-
-
-    private fun loadData() {
-        val notificacionesList = listOf(
-            NotificacionesItem(
-                1,
-                R.drawable.thumbnail,
-                "Pepito",
-                "Desvío en campanario",
-                "Ruta: 1"
-            ),
-            NotificacionesItem(2, R.drawable.thumbnail, "Juanito", "Desvío en el Sena", "Ruta: 2")
-        )
-
-        notificacionesAdapter.update(notificacionesList)
-    }
-}
