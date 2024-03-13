@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confiapp.R
-import com.example.confiapp.fragments.ChatActivity
 import com.example.confiapp.fragments.NotificacionesFragment
 import com.google.firebase.firestore.auth.User
 
@@ -26,8 +25,6 @@ class UserAdapter(private val context: Context, private val userList: ArrayList<
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = userList[position]
         holder.txtUserName.text = user.userName
-
-        // Agrega aquí el código para cargar la imagen del usuario si es necesario
 
         holder.layoutUser.setOnClickListener {
             val intent = Intent(context, NotificacionesFragment::class.java)
