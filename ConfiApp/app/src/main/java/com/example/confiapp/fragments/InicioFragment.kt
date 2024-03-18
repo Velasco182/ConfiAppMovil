@@ -411,6 +411,28 @@ class InicioFragment : Fragment() {
             Toast.makeText(requireContext(), "Ruta Creada, $puntoA", Toast.LENGTH_SHORT).show()
 
 
+//            //ESTO DICE CHAT GPT QUE DEBEMOS CAMBIAR PARA QUE FUNCIONE
+//            --- UWU 👉👈 ---
+
+//            // Tu código existente...
+//
+//            val acceptButton = binding.guardarRutaButton
+//            acceptButton.setOnClickListener {
+//                // Acción cuando se hace clic en Aceptar
+//                if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
+//                    searchRoute(puntoA, puntoB)
+//                }
+//
+//                // Cierra el DialogFragment después de crear la ruta exitosamente
+//                dismiss()
+//
+//                // Muestra un mensaje de toast
+//                Toast.makeText(requireContext(), "Ruta Creada, $placeA", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(requireContext(), "Ruta Creada, $placeB", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
+
             val acceptButton = binding.guardarRutaButton
             acceptButton.setOnClickListener {
 
@@ -468,7 +490,6 @@ class InicioFragment : Fragment() {
                         if (response.isSuccessful) {
                             val route = response.body()?.routes?.firstOrNull()
                             if (route != null) {
-
                                 // Dibuja la ruta en el mapa
                                 drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
 
@@ -483,8 +504,6 @@ class InicioFragment : Fragment() {
 
                                 // Ajusta la cámara para que muestre toda la ruta
                                 val boundsBuilder = LatLngBounds.builder()
-                                //routePoints.forEach { boundsBuilder.include(it) }
-
                                 boundsBuilder.include(originCoordinates)
                                 boundsBuilder.include(destinationCoordinates)
 
@@ -494,14 +513,13 @@ class InicioFragment : Fragment() {
                                     CameraUpdateFactory.newLatLngBounds(bounds, padding)
                                 map.animateCamera(cameraUpdate)
 
-                                // Guardar la ruta en Firebase
+                                // Guardar la ruta en Firebase solo si se obtuvo una ruta válida
                                 saveRouteToFirebase(
                                     origin,
                                     destination,
                                     originCoordinates,
                                     destinationCoordinates
                                 )
-
                             } else {
                                 // No se encontró una ruta
                                 Toast.makeText(
@@ -531,6 +549,9 @@ class InicioFragment : Fragment() {
             }
         }
 
+        // FUNCIÓN PARA GUARDAR EN LA BASE DE DATO DE FIREBASE
+        // NO SE EJECUT, NO SE SABE EL PORQUE JAJAAJAJ UWU 👉👈
+
         private fun saveRouteToFirebase(
             origin: String,
             destination: String,
@@ -545,6 +566,7 @@ class InicioFragment : Fragment() {
                 "destino" to destination,
                 "originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
                 "destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
+
                 // Aquí podemos agregar más campos de la ruta si es necesario
             )
 
