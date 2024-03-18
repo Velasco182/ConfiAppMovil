@@ -44,6 +44,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.database.FirebaseDatabase
 import com.google.maps.android.PolyUtil
 import com.google.maps.DirectionsApiRequest
 import com.google.maps.GeoApiContext
@@ -189,6 +190,7 @@ class InicioFragment : Fragment() {
 
 
     class MapsDialogFragment : DialogFragment(), OnMapReadyCallback {
+
         private lateinit var binding: CrearMapaDialogLayoutBinding
 
         // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
@@ -390,16 +392,18 @@ class InicioFragment : Fragment() {
             })
 
             // Configurar el listener para el AutoCompleteTextView
-            origin.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-                // Obtener el texto seleccionado
-                placeA = parent.getItemAtPosition(position).toString()
-            }
+            origin.onItemClickListener =
+                AdapterView.OnItemClickListener { parent, view, position, id ->
+                    // Obtener el texto seleccionado
+                    placeA = parent.getItemAtPosition(position).toString()
+                }
 
             // Configurar el listener para el AutoCompleteTextView
-            destination.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-                // Obtener el texto seleccionado
-                placeB = parent.getItemAtPosition(position).toString()
-            }
+            destination.onItemClickListener =
+                AdapterView.OnItemClickListener { parent, view, position, id ->
+                    // Obtener el texto seleccionado
+                    placeB = parent.getItemAtPosition(position).toString()
+                }
 
             val puntoA = origin.text.toString()
             val puntoB = destination.text.toString()
@@ -469,8 +473,11 @@ class InicioFragment : Fragment() {
                                 drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
 
                                 // Agrega marcadores en el inicio y final de la ruta
-                                val originMarker = MarkerOptions().position(originCoordinates).title("Origen")
-                                val destinationMarker = MarkerOptions().position(destinationCoordinates).title("Destino")
+                                val originMarker =
+                                    MarkerOptions().position(originCoordinates).title("Origen")
+                                val destinationMarker =
+                                    MarkerOptions().position(destinationCoordinates)
+                                        .title("Destino")
                                 map.addMarker(originMarker)
                                 map.addMarker(destinationMarker)
 
@@ -483,8 +490,17 @@ class InicioFragment : Fragment() {
 
                                 val bounds = boundsBuilder.build()
                                 val padding = 100 // Margen en píxeles alrededor de la ruta
-                                val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                                val cameraUpdate =
+                                    CameraUpdateFactory.newLatLngBounds(bounds, padding)
                                 map.animateCamera(cameraUpdate)
+
+                                // Guardar la ruta en Firebase
+                                saveRouteToFirebase(
+                                    origin,
+                                    destination,
+                                    originCoordinates,
+                                    destinationCoordinates
+                                )
 
                             } else {
                                 // No se encontró una ruta
@@ -512,6 +528,48 @@ class InicioFragment : Fragment() {
                     "No se pudo geocodificar las direcciones",
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        }
+
+        private fun saveRouteToFirebase(
+            origin: String,
+            destination: String,
+            originCoordinates: LatLng,
+            destinationCoordinates: LatLng
+        ) {
+            val database = FirebaseDatabase.getInstance()
+            val reference = database.getReference("rutas")
+
+            val nuevaRuta = mapOf<String, Any>(
+                "origen" to origin,
+                "destino" to destination,
+                "originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
+                "destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
+                // Aquí podemos agregar más campos de la ruta si es necesario
+            )
+
+            // Generar un ID único para la nueva ruta
+            val nuevaRutaId = reference.push().key
+
+            // Guardar la nueva ruta en la base de datos
+            if (nuevaRutaId != null) {
+                reference.child(nuevaRutaId).setValue(nuevaRuta)
+                    .addOnSuccessListener {
+                        // Ruta guardada exitosamente
+                        Toast.makeText(
+                            requireContext(),
+                            "Ruta guardada exitosamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener { e ->
+                        // Error al guardar la ruta
+                        Toast.makeText(
+                            requireContext(),
+                            "Error al guardar la ruta: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
             }
         }
 
