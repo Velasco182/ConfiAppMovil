@@ -16,6 +16,7 @@ import com.example.confiapp.helpers.OnBackPressedListener
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 
@@ -31,6 +32,14 @@ class MenorInicioFragment : Fragment(R.layout.fragment_menor_inicio), OnBackPres
     private lateinit var binding: FragmentMenorInicioBinding
     private lateinit var mapView: MapView
     private var googleMap: GoogleMap? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Inicialización de Google Maps
+        MapsInitializer.initialize(requireContext())
+
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

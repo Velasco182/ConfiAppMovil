@@ -13,8 +13,8 @@ class ConfiAppApiClient {
         // Creamos una función para crear una instancia de Retrofit.
         fun createApiService(): ConfiAppApiService {
 
+           // Puedes ajustar estos valores según necesites
             val okHttpClient = OkHttpClient.Builder()
-                // Puedes ajustar estos valores según necesites
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .build()

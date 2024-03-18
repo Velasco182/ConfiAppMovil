@@ -1,5 +1,7 @@
 package com.example.confiapp.controllers
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +9,8 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -126,6 +130,24 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //}
 
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Si el permiso no ha sido concedido, solicita permiso al usuario
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_CODE_LOCATION_PERMISSION
+            )
+        } else {
+            // Si el permiso ya ha sido concedido, puedes realizar las acciones que requieran el permiso.
+            // Por ejemplo, iniciar la obtención de la ubicación del usuario.
+
+        }
+
+
         adapter = ScreenSlidePagerAdapter(supportFragmentManager, lifecycle)
 
         //val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, lifecycle)
@@ -182,6 +204,38 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }*/
 
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_CODE_LOCATION_PERMISSION -> {
+                // Verifica si el usuario ha concedido el permiso de ubicación
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // El usuario ha concedido el permiso de ubicación, puedes realizar las acciones que requieran el permiso.
+                    // Por ejemplo, iniciar la obtención de la ubicación del usuario.
+
+
+                } else {
+                    // El usuario ha denegado el permiso de ubicación, puedes mostrar un mensaje indicando que la funcionalidad no estará disponible.
+                    Toast.makeText(
+                        this,
+                        "Permiso de ubicación denegado. La funcionalidad de ubicación no estará disponible.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                return
+            }
+        }
+    }
+
+
+    companion object {
+        const val REQUEST_CODE_LOCATION_PERMISSION = 1001
     }
 
     override fun onBackPressed() {

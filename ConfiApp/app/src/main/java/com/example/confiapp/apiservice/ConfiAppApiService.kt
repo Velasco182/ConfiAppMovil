@@ -1,7 +1,5 @@
 package com.example.confiapp.apiservice
 
-// 🡇🡇 RESPECTIVAS IMPORTACIONES 🡇🡇
-
 import com.example.confiapp.models.InicioItem
 import com.example.confiapp.models.NoticiasItem
 import com.example.confiapp.models.TutorItem
@@ -19,11 +17,9 @@ interface ConfiAppApiService {
         val message: ArrayList<String>
     )
 
-    data class LoginResponse(
-        //val success: Boolean,
+   data class LoginResponse(
         val message: ArrayList<String>,
-        val token: String?,
-        val userId: String?
+        val token: String
     )
 
     @GET("noticias")

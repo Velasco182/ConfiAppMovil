@@ -19,7 +19,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     // Función para almacenar los datos
-    fun saveUser(user: String, pass: String){//, token: String
+    fun saveUser(user: String, pass: String){
 
         //Asignar una edición al SharedPreferences (editar)
         val editor = sharedPreferences.edit()
@@ -39,6 +39,17 @@ class SharedPreferencesManager(private val context: Context) {
             editor.apply()
         }
 
+    }
+
+    fun saveToken(token: String?){
+        val editor = sharedPreferences.edit()
+        editor.putString("token", token)
+        editor.apply()
+    }
+
+    //Obtener Token
+    fun getToken(): String{
+        return  sharedPreferences.getString("token", "Empty").toString()
     }
 
     fun saveTutorResponse(tutorRespuesta: ConfiAppApiService.LoginResponse?){
@@ -78,11 +89,6 @@ class SharedPreferencesManager(private val context: Context) {
 
         // Retornar la clave que identifica el contenido de las SharedPreferences
         return sharedPreferences.getString("saveUser", "Empty").toString()
-    }
-
-    //Obtener Token
-    fun getToken(): String{
-        return  sharedPreferences.getString("token", "Empty").toString()
     }
 
     fun getPass(): String{
