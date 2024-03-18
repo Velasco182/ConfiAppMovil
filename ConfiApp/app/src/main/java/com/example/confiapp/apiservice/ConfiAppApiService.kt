@@ -20,6 +20,11 @@ interface ConfiAppApiService {
         val token: String
     )
 
+    data class HistorialResponse(
+        val message: ArrayList<String>,
+        val token: String
+    )
+
     @GET("noticias")
     fun getNoticias(): Call<List<NoticiasItem>>
 

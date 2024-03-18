@@ -22,6 +22,7 @@ import com.example.confiapp.R
 import com.example.confiapp.adapters.InicioAdapter
 import com.example.confiapp.apiservice.ConfiAppApiClient
 import com.example.confiapp.apiservice.ConfiAppApiManager
+import com.example.confiapp.apiservice.ConfiAppApiService
 import com.example.confiapp.apiservice.googlemapsapi.DirectionsResponse
 import com.example.confiapp.apiservice.googlemapsapi.DirectionsService
 import com.example.confiapp.databinding.CrearMapaDialogLayoutBinding
@@ -44,6 +45,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.database.FirebaseDatabase
 import com.google.maps.android.PolyUtil
 import com.google.maps.DirectionsApiRequest
 import com.google.maps.GeoApiContext
@@ -163,6 +165,8 @@ class InicioFragment : Fragment() {
                     val rutas: List<InicioItem>? = response.body()
                     if (rutas != null) {
                         inicioAdapter.update(rutas)
+
+                        //val historial = Callback<List<ConfiAppApiService.HistorialResponse>>
                         //Toast.makeText(requireContext(), "El consumido es${response.body()}", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(requireContext(), "No hay rutas", Toast.LENGTH_SHORT)
@@ -172,6 +176,7 @@ class InicioFragment : Fragment() {
                     // Manejar errores
                     Toast.makeText(requireContext(), "Errorr es$response", Toast.LENGTH_SHORT)
                         .show()
+                    Log.w("Error historial", "$response")
 
                 }
             }
@@ -401,26 +406,28 @@ class InicioFragment : Fragment() {
                 placeB = parent.getItemAtPosition(position).toString()
             }
 
-            val puntoA = origin.text.toString()
-            val puntoB = destination.text.toString()
-
-            Toast.makeText(requireContext(), "Ruta Creada, $puntoA", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "Ruta Creada, $puntoA", Toast.LENGTH_SHORT).show()
 
 
             val acceptButton = binding.guardarRutaButton
             acceptButton.setOnClickListener {
 
+                val puntoA = origin.text.toString()
+                val puntoB = destination.text.toString()
 
                 // Acción cuando se hace clic en Aceptar
                 if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
 
-                    searchRoute(puntoA, puntoB)
-
+                    saveRouteToFirebase(puntoA, puntoB)
+                    //searchRoute(puntoA, puntoB)
                 }
 
-                //dismiss() // Cancela la acción
+                //
+                Log.w("validación", "$placeA, $placeB")
                 Toast.makeText(requireContext(), "Ruta Creada, $placeA", Toast.LENGTH_SHORT).show()
                 Toast.makeText(requireContext(), "Ruta Creada, $placeB", Toast.LENGTH_SHORT).show()
+
+                //dismiss() // Cancela la acción
 
             }
         }
@@ -523,6 +530,48 @@ class InicioFragment : Fragment() {
                 .width(5f)
 
             map.addPolyline(polylineOptions)
+        }
+
+        private fun saveRouteToFirebase(
+            origin: String,
+            destination: String,
+            //originCoordinates: LatLng,
+            //destinationCoordinates: LatLng
+        ) {
+            val database = FirebaseDatabase.getInstance()
+            val reference = database.getReference("rutas")
+
+            val nuevaRuta = mapOf<String, Any>(
+                "origen" to origin,
+                "destino" to destination,
+                //"originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
+                //"destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
+                // Aquí podemos agregar más campos de la ruta si es necesario
+            )
+
+            // Generar un ID único para la nueva ruta
+            val nuevaRutaId = reference.push().key
+
+            // Guardar la nueva ruta en la base de datos
+            if (nuevaRutaId != null) {
+                reference.child(nuevaRutaId).setValue(nuevaRuta)
+                    .addOnSuccessListener {
+                        // Ruta guardada exitosamente
+                        Toast.makeText(
+                            requireContext(),
+                            "Ruta guardada exitosamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    .addOnFailureListener { e ->
+                        // Error al guardar la ruta
+                        Toast.makeText(
+                            requireContext(),
+                            "Error al guardar la ruta: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
         }
 
     }
