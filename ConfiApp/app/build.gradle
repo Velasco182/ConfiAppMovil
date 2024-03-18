@@ -45,11 +45,23 @@ dependencies {
     //DataBinding
     implementation 'androidx.databinding:databinding-runtime:8.3.0'
     /*Dependencias para usar maps*/
+    implementation 'com.google.android.libraries.places:places:3.3.0'
+    // Para la librería de utilidades de Google Maps Android (para PolyUtil, por ejemplo)
+    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
+
+    implementation 'com.google.android.gms:play-services-places:17.0.0'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.google.maps:google-maps-services:2.1.2'
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     //Firebase
     implementation 'com.google.firebase:firebase-database:20.3.1'
     implementation 'com.google.firebase:firebase-common-ktx:20.4.2'
+
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation("com.google.firebase:firebase-analytics")
+
     //autenticación con google y firebase
     implementation 'com.google.firebase:firebase-auth:22.3.1'
     implementation 'com.google.android.gms:play-services-auth:21.0.0'

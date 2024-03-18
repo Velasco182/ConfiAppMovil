@@ -1,18 +1,24 @@
 {
   "project_info": {
     "project_number": "190230562279",
+    "firebase_url": "https://pruebaapp-ec05f-default-rtdb.firebaseio.com",
     "project_id": "pruebaapp-ec05f",
     "storage_bucket": "pruebaapp-ec05f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:190230562279:android:89730514d4833ab3e1a942",
+        "mobilesdk_app_id": "1:190230562279:android:2403a569824e8928e1a942",
         "android_client_info": {
           "package_name": "com.example.confiapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "190230562279-4vm50pm1fcuh9jpqo99e50kq65rju21d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyASXyi5huwFblX1g5wXkRmxBd9UMvGd-ow"
@@ -20,7 +26,70 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "190230562279-4vm50pm1fcuh9jpqo99e50kq65rju21d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190230562279:android:89730514d4833ab3e1a942",
+        "android_client_info": {
+          "package_name": "com.example.pruebaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "190230562279-4vm50pm1fcuh9jpqo99e50kq65rju21d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASXyi5huwFblX1g5wXkRmxBd9UMvGd-ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "190230562279-4vm50pm1fcuh9jpqo99e50kq65rju21d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190230562279:android:c5bef090bc9def26e1a942",
+        "android_client_info": {
+          "package_name": "com.fredrikbogg.android_chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "190230562279-4vm50pm1fcuh9jpqo99e50kq65rju21d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASXyi5huwFblX1g5wXkRmxBd9UMvGd-ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "190230562279-4vm50pm1fcuh9jpqo99e50kq65rju21d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

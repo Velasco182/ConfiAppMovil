@@ -1,63 +1,64 @@
 package com.example.confiapp.fragments
 
 import android.app.Dialog
-import android.app.FragmentManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.Geocoder
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.EditText
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confiapp.R
 import com.example.confiapp.adapters.InicioAdapter
 import com.example.confiapp.apiservice.ConfiAppApiClient
 import com.example.confiapp.apiservice.ConfiAppApiManager
-import com.example.confiapp.apiservice.ConfiAppApiService
+import com.example.confiapp.apiservice.googlemapsapi.DirectionsResponse
+import com.example.confiapp.apiservice.googlemapsapi.DirectionsService
 import com.example.confiapp.databinding.CrearMapaDialogLayoutBinding
 import com.example.confiapp.databinding.FragmentInicioBinding
 import com.example.confiapp.models.InicioItem
-import com.example.confiapp.models.NoticiasItem
-import com.example.confiapp.models.RouteResponse
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolygonOptions
-import com.google.android.gms.maps.model.Polyline
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.maps.android.PolyUtil
+import com.google.maps.DirectionsApiRequest
+import com.google.maps.GeoApiContext
+import com.google.maps.model.TravelMode
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.log
 
-class InicioFragment : Fragment(), OnMapReadyCallback {
+class InicioFragment : Fragment() {
 
     private lateinit var binding: FragmentInicioBinding
     private lateinit var inicioAdapter: InicioAdapter
 
     private lateinit var apiManager: ConfiAppApiManager
 
-    // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
-    private lateinit var map: GoogleMap
-
-    // private lateinit var buttonRuta: Button
-
-    private var star: String = ""
-    private var end: String = ""
-
-    var poly: Polyline? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,7 +75,8 @@ class InicioFragment : Fragment(), OnMapReadyCallback {
             val dialogFragment = MapsDialogFragment()
             dialogFragment.show(parentFragmentManager, "maps_dialog")
 
-            star = ""
+
+            /*star = ""
             end = ""
             poly?.remove()
             poly = null
@@ -93,18 +95,16 @@ class InicioFragment : Fragment(), OnMapReadyCallback {
 
                     }
                 }
-            }
+            }*/
 
-            val mapFragment = SupportMapFragment.newInstance()
-
-            // Cargar el MapFragment en el FragmentContainerView
-            childFragmentManager.beginTransaction().apply {
+            // Cargar el MapFragment en el FragmentContainerView = SupportMapFragment.newInstance()
+            /*childFragmentManager.beginTransaction().apply {
                 replace(R.id.fragmentContainer, mapFragment)
                 .commit()
             }
 
 
-            mapFragment.getMapAsync(this)
+            mapFragment.getMapAsync(this)*/
 
         }
 
@@ -187,54 +187,28 @@ class InicioFragment : Fragment(), OnMapReadyCallback {
         //inicioAdapter.update(rutasList)
     }
 
-    override fun onMapReady(map: GoogleMap) {
-        this.map = map
-    }
 
-    fun createRoute() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(ConfiAppApiService::class.java)
-                .getRoute("5b3ce3597851110001cf62482012481d44b14326904e25820054ec73", star, end)
-            if (call.isSuccessful) {
-                drawRoute(call.body())
-            } else {
-                Log.i("aris", "KO")
-            }
-        }
-    }
-
-    private fun drawRoute(routeResponse: RouteResponse?) {
-        val polylineOptions = PolygonOptions()
-        routeResponse?.features?.first()?.geometry?.coordinates?.forEach {
-            polylineOptions.add(LatLng(it[1], it[0]))
-        }
-
-        activity?.runOnUiThread {
-            poly = map.addPolyline(polylineOptions)
-        }
-
-    }
-
-    private fun getRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl("https://api.openrouteservice.org/")
-            .addCallAdapterFactory(GsonConverterFactory.create())
-            .build()
-    }
-    private fun Retrofit.Builder.addCallAdapterFactory(create: GsonConverterFactory): Retrofit.Builder {
-        return addCallAdapterFactory(create)
-    }
-
-    private fun GoogleMap.addPolyline(polylineOptions: PolygonOptions): Polyline {
-        return addPolyline(polylineOptions)
-    }
-
-
-    class MapsDialogFragment : DialogFragment(){
+    class MapsDialogFragment : DialogFragment(), OnMapReadyCallback {
         private lateinit var binding: CrearMapaDialogLayoutBinding
+
+        // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
+        private lateinit var map: GoogleMap
+        private lateinit var placesClient: PlacesClient
+        private lateinit var autoCompleteAdapterA: ArrayAdapter<String>
+        private lateinit var autoCompleteAdapterB: ArrayAdapter<String>
+
+        private var placeA: String? = null
+        private var placeB: String? = null
+
+
+        // Definir una longitud mínima de consulta para iniciar la búsqueda de autocompletado
+        private var MIN_QUERY_LENGTH = 1
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val dialog = super.onCreateDialog(savedInstanceState)
+
+            // Inicialización de Google Maps
+            MapsInitializer.initialize(requireContext())
 
             dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
@@ -264,36 +238,292 @@ class InicioFragment : Fragment(), OnMapReadyCallback {
 
             binding = CrearMapaDialogLayoutBinding.bind(view)
 
-            // Crear un nuevo MapFragment
-            //val mapFragment = SupportMapFragment.newInstance()
+            val mapFragment =
+                childFragmentManager.findFragmentById(R.id.fragmentContainer) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+
+            // Inicializa la API de Google Places
+            Places.initialize(requireContext(), "AIzaSyAFwVvdV2JmsSzik6Dx5M17hoewBKEakoY")
+            placesClient = Places.createClient(requireContext())
+
+            val origin = binding.puntoA
+            val destination = binding.puntoB
 
 
-            // Notificar al MapFragment que está listo para inicializarse
-           // mapFragment.getMapAsync(this) //{ googleMap ->
-                // Aquí puedes configurar el mapa, añadir marcadores, etc.
-                // Por ejemplo:
-                //val location = LatLng(2.4449261743007327, -76.6001259041013)
-                //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12f))
-            //}
+            // Inicializa el ArrayAdapter
+            autoCompleteAdapterA =
+                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
 
-            val puntoA = binding.puntoA
-            val puntoB = binding.puntoB
+            // Configura un TextWatcher en tu campo de entrada
+            origin.setAdapter(autoCompleteAdapterA)
+            origin.addTextChangedListener(object : TextWatcher {
+
+                private var lastQuery = ""
+
+                override fun afterTextChanged(s: Editable?) {
+
+                    val newText = s.toString().trim()
+
+                    if (newText == lastQuery) return  // Evita realizar consultas repetidas
+
+                    lastQuery = newText
+
+                    // Llama a la API de Autocompletado solo si el texto de entrada tiene longitud suficiente
+                    if (newText.length >= MIN_QUERY_LENGTH) {
+
+                        val request = FindAutocompletePredictionsRequest.builder()
+                            // Establece la preferencia de ubicación en tu ciudad
+                            .setLocationBias(
+                                RectangularBounds.newInstance(
+                                    LatLng(2.424, -76.629),
+                                    LatLng(2.471, -76.580)
+                                )
+                            )
+                            .setQuery(s.toString())
+                            .build()
+
+                        placesClient.findAutocompletePredictions(request)
+                            .addOnSuccessListener { response ->
+
+                                val prediction = response.autocompletePredictions.map {
+                                    it.getFullText(null).toString()
+                                }
+
+                                //autoCompleteAdapterA.clear()
+                                autoCompleteAdapterA.addAll(prediction)
+
+                                for (predictions in response.autocompletePredictions) {
+                                    Log.w("Punto A", predictions.getFullText(null).toString())
+                                }
+
+                            }.addOnFailureListener { exception ->
+                                if (exception is ApiException) {
+                                    Log.e(
+                                        "Punto A",
+                                        "Error al obtener las predicciones de autocompletado: ${exception.statusCode}"
+                                    )
+                                }
+                            }
+                    } else {
+                        // Si el texto es demasiado corto, limpia la lista de sugerencias
+                        autoCompleteAdapterA.clear()
+                    }
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                }
+            })
+
+            // Inicializa el ArrayAdapter
+            autoCompleteAdapterB =
+                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
+
+            destination.setAdapter(autoCompleteAdapterB)
+            destination.addTextChangedListener(object : TextWatcher {
+
+                override fun afterTextChanged(s: Editable?) {
+
+                    // Llama a la API de Autocompletado cuando el usuario cambia el texto
+                    val request = FindAutocompletePredictionsRequest.builder()
+                        // Establece la preferencia de ubicación en tu ciudad
+                        .setLocationBias(
+                            RectangularBounds.newInstance(
+                                LatLng(2.424, -76.629),
+                                LatLng(2.471, -76.580)
+                            )
+                        )
+                        .setQuery(s.toString())
+                        .build()
+
+                    placesClient.findAutocompletePredictions(request)
+                        .addOnSuccessListener { response ->
+
+                            val prediction = response.autocompletePredictions.map {
+                                it.getFullText(null).toString()
+                            }
+
+                            //autoCompleteAdapter.clear()
+                            autoCompleteAdapterB.addAll(prediction)
+
+                            for (predictions in response.autocompletePredictions) {
+                                Log.w("Punto B", predictions.getFullText(null).toString())
+                            }
+
+                        }.addOnFailureListener { exception ->
+                            if (exception is ApiException) {
+                                Log.e(
+                                    "Punto B",
+                                    "Error al obtener las predicciones de autocompletado: ${exception.statusCode}"
+                                )
+                            }
+                        }
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                }
+            })
+
+            // Configurar el listener para el AutoCompleteTextView
+            origin.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+                // Obtener el texto seleccionado
+                placeA = parent.getItemAtPosition(position).toString()
+            }
+
+            // Configurar el listener para el AutoCompleteTextView
+            destination.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+                // Obtener el texto seleccionado
+                placeB = parent.getItemAtPosition(position).toString()
+            }
+
+            val puntoA = origin.text.toString()
+            val puntoB = destination.text.toString()
+
+            Toast.makeText(requireContext(), "Ruta Creada, $puntoA", Toast.LENGTH_SHORT).show()
+
 
             val acceptButton = binding.guardarRutaButton
             acceptButton.setOnClickListener {
+
+
                 // Acción cuando se hace clic en Aceptar
+                if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
 
+                    searchRoute(puntoA, puntoB)
 
-                val puntoAA = puntoA.text.toString()
-                val puntoBB = puntoB.text.toString()
+                }
 
-                dismiss() // Cancela la acción
-                Toast.makeText(requireContext(), "Ruta Creada", Toast.LENGTH_SHORT).show()
-                //dismiss()  Cierra el diálogo
+                //dismiss() // Cancela la acción
+                Toast.makeText(requireContext(), "Ruta Creada, $placeA", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Ruta Creada, $placeB", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
+        override fun onMapReady(googleMap: GoogleMap) {
+            map = googleMap
+        }
+
+        private fun searchRoute(origin: String, destination: String) {
+            val geocoder = Geocoder(requireContext())
+
+            val originAddress = geocoder.getFromLocationName(origin, 1)?.firstOrNull()
+            val originCoordinates = originAddress?.let { LatLng(it.latitude, it.longitude) }
+
+            val destinationAddress = geocoder.getFromLocationName(destination, 1)?.firstOrNull()
+            val destinationCoordinates =
+                destinationAddress?.let { LatLng(it.latitude, it.longitude) }
+
+            Log.e("origin", originCoordinates.toString())
+            Log.e("destination", destinationCoordinates.toString())
+
+            if (originCoordinates != null && destinationCoordinates != null) {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://maps.googleapis.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+
+                val service = retrofit.create(DirectionsService::class.java)
+
+                val call = service.getDirections(
+                    origin = "${originCoordinates.latitude},${originCoordinates.longitude}",
+                    destination = "${destinationCoordinates.latitude},${destinationCoordinates.longitude}",
+                    key = "AIzaSyAFwVvdV2JmsSzik6Dx5M17hoewBKEakoY"
+                )
+
+                call.enqueue(object : Callback<DirectionsResponse> {
+                    override fun onResponse(
+                        call: Call<DirectionsResponse>,
+                        response: Response<DirectionsResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val route = response.body()?.routes?.firstOrNull()
+                            if (route != null) {
+
+                                // Dibuja la ruta en el mapa
+                                drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
+
+                                // Agrega marcadores en el inicio y final de la ruta
+                                val originMarker = MarkerOptions().position(originCoordinates).title("Origen")
+                                val destinationMarker = MarkerOptions().position(destinationCoordinates).title("Destino")
+                                map.addMarker(originMarker)
+                                map.addMarker(destinationMarker)
+
+                                // Ajusta la cámara para que muestre toda la ruta
+                                val boundsBuilder = LatLngBounds.builder()
+                                //routePoints.forEach { boundsBuilder.include(it) }
+
+                                boundsBuilder.include(originCoordinates)
+                                boundsBuilder.include(destinationCoordinates)
+
+                                val bounds = boundsBuilder.build()
+                                val padding = 100 // Margen en píxeles alrededor de la ruta
+                                val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                                map.animateCamera(cameraUpdate)
+
+                            } else {
+                                // No se encontró una ruta
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No se encontró una ruta",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            // Manejo de errores
+                            Log.e("InicioFragment", "Error al obtener la ruta: ${response.code()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
+                        // Manejo de errores
+                        Log.e("InicioFragment", "Error al obtener la ruta", t)
+                    }
+                })
+            } else {
+                // No se pudo geocodificar las direcciones
+                Toast.makeText(
+                    requireContext(),
+                    "No se pudo geocodificar las direcciones",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
 
+        private fun drawRoute(routePoints: List<LatLng>) {
+            val polylineOptions = PolylineOptions()
+                .addAll(routePoints)
+                .color(Color.RED)
+                .width(5f)
+
+            map.addPolyline(polylineOptions)
+        }
 
     }
 

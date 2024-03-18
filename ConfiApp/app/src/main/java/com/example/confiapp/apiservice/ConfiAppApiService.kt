@@ -1,18 +1,13 @@
 package com.example.confiapp.apiservice
 
-// 🡇🡇 RESPECTIVAS IMPORTACIONES 🡇🡇
-
 import com.example.confiapp.models.InicioItem
 import com.example.confiapp.models.NoticiasItem
-import com.example.confiapp.models.RouteResponse
 import com.example.confiapp.models.TutorItem
 import com.example.confiapp.models.TutorLoginItem
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface ConfiAppApiService {
 
@@ -20,11 +15,9 @@ interface ConfiAppApiService {
         val message: ArrayList<String>
     )
 
-    data class LoginResponse(
-        //val success: Boolean,
+   data class LoginResponse(
         val message: ArrayList<String>,
-        val token: String?,
-        val userId: String?
+        val token: String
     )
 
     @GET("noticias")
@@ -38,12 +31,5 @@ interface ConfiAppApiService {
 
     @POST("login")
     fun postTutorLogin(@Body tutorLogin: TutorLoginItem): Call<LoginResponse>
-
-    @GET("v2/directions/driving-car")
-    suspend fun getRoute(
-        @Query("api_key") key: String,
-        @Query("start", encoded = true) start: String,
-        @Query("end", encoded = true) end: String
-    ): Response<RouteResponse>
 
 }

@@ -31,7 +31,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,8 +41,9 @@ import retrofit2.Response
 //} private lateinit var binding: ResultProfileBinding
 class LoginFragment : Fragment() {
     //Binding en fragments
-    private var _binding : FragmentLoginBinding? = null
+    private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
     ///sharedPreferences
     private lateinit var sharedPre: SharedPreferencesManager
 
@@ -51,13 +51,16 @@ class LoginFragment : Fragment() {
 
     private lateinit var activity: Activity
 
+    //Token para inicio de sesión
+    private var userToken: String? = null
+
     //Google Login
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
     private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
     private var showOneTapUI = true
 
-    lateinit var  buttonOpenActivity : Button
+    lateinit var buttonOpenActivity: Button
 
     /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,11 +112,13 @@ class LoginFragment : Fragment() {
                             // with your backend.
                             Log.d(TAG, "Got ID token.")
                         }
+
                         password != null -> {
                             // Got a saved username and password. Use them to authenticate
                             // with your backend.
                             Log.d(TAG, "Got password.")
                         }
+
                         else -> {
                             // Shouldn't happen.
                             Log.d(TAG, "No ID token or password!")
@@ -126,13 +131,17 @@ class LoginFragment : Fragment() {
                             // Don't re-prompt the user.
                             showOneTapUI = false
                         }
+
                         CommonStatusCodes.NETWORK_ERROR -> {
                             Log.d(TAG, "One-tap encountered a network error.")
                             // Try again or just ignore.
                         }
+
                         else -> {
-                            Log.d(TAG, "Couldn't get credential from result." +
-                                    " (${e.localizedMessage})")
+                            Log.d(
+                                TAG, "Couldn't get credential from result." +
+                                        " (${e.localizedMessage})"
+                            )
                         }
                     }
                 }
@@ -146,6 +155,8 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
 
         /*by lazy {
             DataBindingUtil.inflate(LayoutInflater, R.layout.fragment_login, )
@@ -202,9 +213,11 @@ class LoginFragment : Fragment() {
         oneTapClient = Identity.getSignInClient(requireActivity())
 
         signInRequest = BeginSignInRequest.builder()
-            .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
-                .setSupported(true)
-                .build())
+            .setPasswordRequestOptions(
+                BeginSignInRequest.PasswordRequestOptions.builder()
+                    .setSupported(true)
+                    .build()
+            )
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
@@ -212,7 +225,8 @@ class LoginFragment : Fragment() {
                     .setServerClientId(getString(R.string.web_client_id))
                     // Only show accounts previously used to sign in.
                     .setFilterByAuthorizedAccounts(true)
-                    .build())
+                    .build()
+            )
             // Automatically sign in when exactly one credential is retrieved.
             .setAutoSelectEnabled(true)
             .build()
@@ -220,23 +234,26 @@ class LoginFragment : Fragment() {
 
         val googleButton = binding.googleButton
 
+        googleButton.visibility = View.GONE
+
         googleButton.setOnClickListener {
 
-        oneTapClient.beginSignIn(signInRequest)
-            .addOnSuccessListener(requireActivity()) { result ->
-                try {
-                    startIntentSenderForResult(
-                        result.pendingIntent.intentSender, REQ_ONE_TAP,
-                        null, 0, 0, 0, null)
-                } catch (e: IntentSender.SendIntentException) {
-                    Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
+            oneTapClient.beginSignIn(signInRequest)
+                .addOnSuccessListener(requireActivity()) { result ->
+                    try {
+                        startIntentSenderForResult(
+                            result.pendingIntent.intentSender, REQ_ONE_TAP,
+                            null, 0, 0, 0, null
+                        )
+                    } catch (e: IntentSender.SendIntentException) {
+                        Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
+                    }
                 }
-            }
-            .addOnFailureListener(requireActivity()) { e ->
-                // No saved credentials found. Launch the One Tap sign-up flow, or
-                // do nothing and continue presenting the signed-out UI.
-                Log.d(TAG, e.localizedMessage)
-            }
+                .addOnFailureListener(requireActivity()) { e ->
+                    // No saved credentials found. Launch the One Tap sign-up flow, or
+                    // do nothing and continue presenting the signed-out UI.
+                    Log.d(TAG, e.localizedMessage)
+                }
 
         }
 
@@ -246,30 +263,31 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-    }
-    fun validar(u: String, p: String) {
+        //Validar existencia del token
 
-        if (u == sharedPre.getUser() && p == sharedPre.getPass() ) {
+        /*if (validar()) {
 
             val intent = Intent(activity, MainActivity::class.java)
-            //intent.putExtra("user", u)
-
             startActivity(intent)
 
-        }else{
+        }*/
+    }
 
-            Toast.makeText(activity, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+    private fun validar() : Boolean{
 
-        }
+        val token = sharedPre.getToken()
+
+        return tokenValidation(token)
 
     }
 
     private fun iniciarSesion(email: String, password: String) {
 
-        //val token = usartoken
+        //val token = userToken
 
         // Crear una instancia de LoginData con los datos insertados en el formulario
         val data = TutorLoginItem(email, password)
+        //val dataResponse = ConfiAppApiService.LoginResponse(token)
 
         // LLamar a la función iniciarSesion en ApiManager de forma asincrona con lifecycleScope
         apiManager.insertarLogin(data, object : Callback<ConfiAppApiService.LoginResponse> {
@@ -280,25 +298,31 @@ class LoginFragment : Fragment() {
                 if (response.isSuccessful) {
                     // Si la respuesta es exitosa
                     val result = response.body()
-                    //Asigancion del token
-                    //val token = result?.message
-                    //val details = Gson().toJson(token)
+
+                    userToken = response.body()?.token
+                    val header = response.headers()
+
+                    Log.w("headers", "$header")
 
                     Toast.makeText(
                         requireContext(),
                         "Datos insertados correctamente: $result",
                         Toast.LENGTH_SHORT
                     ).show()
+                        val intent = Intent(activity, MainActivity::class.java)
+                    //if(tokenValidation(userToken)){
+                        sharedPre.saveUser(email, password)
+                        sharedPre.saveToken(userToken)
+                        startActivity(intent)
+                    //}else{
 
-                    //val token = result?.token
+                        /*Toast.makeText(
+                            requireContext(),
+                            "Token no válido",
+                            Toast.LENGTH_SHORT
+                        ).show()*/
 
-                    val intent = Intent(activity, MainActivity::class.java)
-                    //intent.putExtra("user", u)
-                    sharedPre.saveUser(email, password)
-                    //sharedPre.saveTutorResponse(result)
-                    sharedPre.saveBool()
-
-                    startActivity(intent)
+                    //}
 
                     // Guardar los datos del usuario en SharedPreferences
                     /*if (result?.message.toString() == "true" || sharedPre.saveBool().toString() == "true"){
@@ -307,14 +331,12 @@ class LoginFragment : Fragment() {
                             "True",
                             Toast.LENGTH_SHORT
                         ).show()
-
                     }else{
                         Toast.makeText(
                             requireContext(),
                             "False",
                             Toast.LENGTH_SHORT
                         ).show()
-
                     }*/
 
                 } else {
@@ -337,7 +359,11 @@ class LoginFragment : Fragment() {
             }
         })
 
+    }
 
+
+    private fun tokenValidation(userToken: String?): Boolean {
+        return userToken != null && userToken.isNotEmpty()
     }
 
 }

@@ -1,7 +1,7 @@
 package com.example.confiapp.models
 
 data class TutorLoginItem(
-    //val token: String,
+    //var token: String,
     val email: String,
-    val password: String
+    val password: String,
 )

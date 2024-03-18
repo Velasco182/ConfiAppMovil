@@ -4,7 +4,6 @@ import com.example.confiapp.models.InicioItem
 import com.example.confiapp.models.NoticiasItem
 import com.example.confiapp.models.TutorItem
 import com.example.confiapp.models.TutorLoginItem
-import retrofit2.Call
 import retrofit2.Callback
 
 class ConfiAppApiManager(private val apiService: ConfiAppApiService) {
