@@ -194,7 +194,6 @@ class InicioFragment : Fragment() {
 
 
     class MapsDialogFragment : DialogFragment(), OnMapReadyCallback {
-
         private lateinit var binding: CrearMapaDialogLayoutBinding
 
         // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
@@ -206,6 +205,9 @@ class InicioFragment : Fragment() {
         private var placeA: String? = null
         private var placeB: String? = null
 
+        // Declarar variables para almacenar las coordenadas de origen y destino
+        private  var originCoordinates: LatLng? = null
+        private  var destinationCoordinates: LatLng? = null
 
         // Definir una longitud mínima de consulta para iniciar la búsqueda de autocompletado
         private var MIN_QUERY_LENGTH = 1
@@ -412,39 +414,31 @@ class InicioFragment : Fragment() {
             //Toast.makeText(requireContext(), "Ruta Creada, $puntoA", Toast.LENGTH_SHORT).show()
 
 
-//            //ESTO DICE CHAT GPT QUE DEBEMOS CAMBIAR PARA QUE FUNCIONE
-//            --- UWU 👉👈 ---
-
-//            // Tu código existente...
-//
-//            val acceptButton = binding.guardarRutaButton
-//            acceptButton.setOnClickListener {
-//                // Acción cuando se hace clic en Aceptar
-//                if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
-//                    searchRoute(puntoA, puntoB)
-//                }
-//
-//                // Cierra el DialogFragment después de crear la ruta exitosamente
-//                dismiss()
-//
-//                // Muestra un mensaje de toast
-//                Toast.makeText(requireContext(), "Ruta Creada, $placeA", Toast.LENGTH_SHORT).show()
-//                Toast.makeText(requireContext(), "Ruta Creada, $placeB", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-
-
             val acceptButton = binding.guardarRutaButton
             acceptButton.setOnClickListener {
 
                 val puntoA = origin.text.toString()
                 val puntoB = destination.text.toString()
 
+                val geocoder = Geocoder(requireContext())
+
+                val originAddress = geocoder.getFromLocationName(puntoA, 1)?.firstOrNull()
+                val originCoordinates = originAddress?.let { LatLng(it.latitude, it.longitude) }
+
+                val destinationAddress = geocoder.getFromLocationName(puntoB, 1)?.firstOrNull()
+                val destinationCoordinates =
+                    destinationAddress?.let { LatLng(it.latitude, it.longitude) }
+
                 // Acción cuando se hace clic en Aceptar
                 if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
 
-                    saveRouteToFirebase(puntoA, puntoB)
-                    //searchRoute(puntoA, puntoB)
+
+                    if (originCoordinates != null) {
+                        if (destinationCoordinates != null) {
+                            saveRouteToFirebase(puntoA, puntoB, originCoordinates , destinationCoordinates )
+                        }
+                    }
+                    searchRoute(puntoA, puntoB)
                 }
 
                 //
@@ -462,14 +456,6 @@ class InicioFragment : Fragment() {
         }
 
         private fun searchRoute(origin: String, destination: String) {
-            val geocoder = Geocoder(requireContext())
-
-            val originAddress = geocoder.getFromLocationName(origin, 1)?.firstOrNull()
-            val originCoordinates = originAddress?.let { LatLng(it.latitude, it.longitude) }
-
-            val destinationAddress = geocoder.getFromLocationName(destination, 1)?.firstOrNull()
-            val destinationCoordinates =
-                destinationAddress?.let { LatLng(it.latitude, it.longitude) }
 
             Log.e("origin", originCoordinates.toString())
             Log.e("destination", destinationCoordinates.toString())
@@ -483,8 +469,8 @@ class InicioFragment : Fragment() {
                 val service = retrofit.create(DirectionsService::class.java)
 
                 val call = service.getDirections(
-                    origin = "${originCoordinates.latitude},${originCoordinates.longitude}",
-                    destination = "${destinationCoordinates.latitude},${destinationCoordinates.longitude}",
+                    origin = "${originCoordinates!!.latitude},${originCoordinates!!.longitude}",
+                    destination = "${destinationCoordinates!!.latitude},${destinationCoordinates!!.longitude}",
                     key = "AIzaSyAFwVvdV2JmsSzik6Dx5M17hoewBKEakoY"
                 )
 
@@ -496,22 +482,25 @@ class InicioFragment : Fragment() {
                         if (response.isSuccessful) {
                             val route = response.body()?.routes?.firstOrNull()
                             if (route != null) {
+
                                 // Dibuja la ruta en el mapa
                                 drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
 
                                 // Agrega marcadores en el inicio y final de la ruta
                                 val originMarker =
-                                    MarkerOptions().position(originCoordinates).title("Origen")
+                                    MarkerOptions().position(originCoordinates!!).title("Origen")
                                 val destinationMarker =
-                                    MarkerOptions().position(destinationCoordinates)
+                                    MarkerOptions().position(destinationCoordinates!!)
                                         .title("Destino")
                                 map.addMarker(originMarker)
                                 map.addMarker(destinationMarker)
 
                                 // Ajusta la cámara para que muestre toda la ruta
                                 val boundsBuilder = LatLngBounds.builder()
-                                boundsBuilder.include(originCoordinates)
-                                boundsBuilder.include(destinationCoordinates)
+                                //routePoints.forEach { boundsBuilder.include(it) }
+
+                                boundsBuilder.include(originCoordinates!!)
+                                boundsBuilder.include(destinationCoordinates!!)
 
                                 val bounds = boundsBuilder.build()
                                 val padding = 100 // Margen en píxeles alrededor de la ruta
@@ -519,13 +508,6 @@ class InicioFragment : Fragment() {
                                     CameraUpdateFactory.newLatLngBounds(bounds, padding)
                                 map.animateCamera(cameraUpdate)
 
-                                // Guardar la ruta en Firebase solo si se obtuvo una ruta válida
-                                saveRouteToFirebase(
-                                    origin,
-                                    destination,
-                                    originCoordinates,
-                                    destinationCoordinates
-                                )
                             } else {
                                 // No se encontró una ruta
                                 Toast.makeText(
@@ -555,8 +537,15 @@ class InicioFragment : Fragment() {
             }
         }
 
-        // FUNCIÓN PARA GUARDAR EN LA BASE DE DATO DE FIREBASE
-        // NO SE EJECUT, NO SE SABE EL PORQUE JAJAAJAJ UWU 👉👈
+
+        private fun drawRoute(routePoints: List<LatLng>) {
+            val polylineOptions = PolylineOptions()
+                .addAll(routePoints)
+                .color(Color.RED)
+                .width(5f)
+
+            map.addPolyline(polylineOptions)
+        }
 
         private fun saveRouteToFirebase(
             origin: String,
@@ -572,59 +561,6 @@ class InicioFragment : Fragment() {
                 "destino" to destination,
                 "originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
                 "destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
-
-                // Aquí podemos agregar más campos de la ruta si es necesario
-            )
-
-            // Generar un ID único para la nueva ruta
-            val nuevaRutaId = reference.push().key
-
-            // Guardar la nueva ruta en la base de datos
-            if (nuevaRutaId != null) {
-                reference.child(nuevaRutaId).setValue(nuevaRuta)
-                    .addOnSuccessListener {
-                        // Ruta guardada exitosamente
-                        Toast.makeText(
-                            requireContext(),
-                            "Ruta guardada exitosamente",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    .addOnFailureListener { e ->
-                        // Error al guardar la ruta
-                        Toast.makeText(
-                            requireContext(),
-                            "Error al guardar la ruta: ${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-            }
-        }
-
-
-        private fun drawRoute(routePoints: List<LatLng>) {
-            val polylineOptions = PolylineOptions()
-                .addAll(routePoints)
-                .color(Color.RED)
-                .width(5f)
-
-            map.addPolyline(polylineOptions)
-        }
-
-        private fun saveRouteToFirebase(
-            origin: String,
-            destination: String,
-            //originCoordinates: LatLng,
-            //destinationCoordinates: LatLng
-        ) {
-            val database = FirebaseDatabase.getInstance()
-            val reference = database.getReference("rutas")
-
-            val nuevaRuta = mapOf<String, Any>(
-                "origen" to origin,
-                "destino" to destination,
-                //"originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
-                //"destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
                 // Aquí podemos agregar más campos de la ruta si es necesario
             )
 
