@@ -297,6 +297,8 @@ class LoginFragment : Fragment() {
             ) {
                 if (response.isSuccessful) {
                     // Si la respuesta es exitosa
+                    sharedPre.saveBool()
+
                     val result = response.body()
 
                     userToken = response.body()?.token

@@ -40,6 +40,9 @@ android {
 
 dependencies {
 
+    ///EncryptedSharedPreferences
+    implementation 'androidx.security:security-crypto:1.0.0'
+
     //Corutinas
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     //DataBinding
