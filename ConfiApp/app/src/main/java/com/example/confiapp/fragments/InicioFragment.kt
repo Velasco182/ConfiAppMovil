@@ -206,8 +206,8 @@ class InicioFragment : Fragment() {
         private var placeB: String? = null
 
         // Declarar variables para almacenar las coordenadas de origen y destino
-        private  var originCoordinates: LatLng? = null
-        private  var destinationCoordinates: LatLng? = null
+        private var originCoordinates: LatLng? = null
+        private var destinationCoordinates: LatLng? = null
 
         // Definir una longitud mínima de consulta para iniciar la búsqueda de autocompletado
         private var MIN_QUERY_LENGTH = 1
@@ -435,7 +435,12 @@ class InicioFragment : Fragment() {
 
                     if (originCoordinates != null) {
                         if (destinationCoordinates != null) {
-                            saveRouteToFirebase(puntoA, puntoB, originCoordinates , destinationCoordinates )
+                            saveRouteToFirebase(
+                                puntoA,
+                                puntoB,
+                                originCoordinates,
+                                destinationCoordinates
+                            )
                         }
                     }
                     searchRoute(puntoA, puntoB)
@@ -482,23 +487,20 @@ class InicioFragment : Fragment() {
                         if (response.isSuccessful) {
                             val route = response.body()?.routes?.firstOrNull()
                             if (route != null) {
-
                                 // Dibuja la ruta en el mapa
                                 drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
 
                                 // Agrega marcadores en el inicio y final de la ruta
                                 val originMarker =
                                     MarkerOptions().position(originCoordinates!!).title("Origen")
-                                val destinationMarker =
-                                    MarkerOptions().position(destinationCoordinates!!)
-                                        .title("Destino")
+                                val destinationMarker = MarkerOptions().position(
+                                    destinationCoordinates!!
+                                ).title("Destino")
                                 map.addMarker(originMarker)
                                 map.addMarker(destinationMarker)
 
                                 // Ajusta la cámara para que muestre toda la ruta
                                 val boundsBuilder = LatLngBounds.builder()
-                                //routePoints.forEach { boundsBuilder.include(it) }
-
                                 boundsBuilder.include(originCoordinates!!)
                                 boundsBuilder.include(destinationCoordinates!!)
 
@@ -508,6 +510,13 @@ class InicioFragment : Fragment() {
                                     CameraUpdateFactory.newLatLngBounds(bounds, padding)
                                 map.animateCamera(cameraUpdate)
 
+                                // Guardar la ruta en Firebase solo si se obtuvo una ruta válida
+                                saveRouteToFirebase(
+                                    origin,
+                                    destination,
+                                    originCoordinates!!,
+                                    destinationCoordinates!!
+                                )
                             } else {
                                 // No se encontró una ruta
                                 Toast.makeText(
@@ -537,15 +546,16 @@ class InicioFragment : Fragment() {
             }
         }
 
-
         private fun drawRoute(routePoints: List<LatLng>) {
             val polylineOptions = PolylineOptions()
                 .addAll(routePoints)
                 .color(Color.RED)
                 .width(5f)
 
-            map.addPolyline(polylineOptions)
+            val polyline = map.addPolyline(polylineOptions)
+            polyline.isClickable = true
         }
+
 
         private fun saveRouteToFirebase(
             origin: String,
