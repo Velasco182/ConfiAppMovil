@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.example.confiapp.apiservice.ConfiAppApiService
 import com.example.confiapp.models.TutorRespuesta
 import com.google.gson.Gson
@@ -17,6 +19,27 @@ class SharedPreferencesManager(private val context: Context) {
         ///Solamente para el teléfono en el que se esta usando la aplicación (nombre de la db y el segundo el modo en que se va a manejar la base de datos)
         context.getSharedPreferences(name_DB, Context.MODE_PRIVATE)
     }
+
+    private val sharedPreferencesEncrypted: SharedPreferences
+
+    init {
+        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+        sharedPreferencesEncrypted = EncryptedSharedPreferences.create(
+            "token-encrypted",
+            masterKey,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
+
+    fun saveToken(token: String?) {
+        sharedPreferencesEncrypted.edit().putString("userToken", token).apply()
+    }
+
+    fun getToken(): String? = sharedPreferencesEncrypted.getString("userToken", null)
+
 
     // Función para almacenar los datos
     fun saveUser(user: String, pass: String){
@@ -41,7 +64,7 @@ class SharedPreferencesManager(private val context: Context) {
 
     }
 
-    fun saveToken(token: String?){
+    /*fun saveToken(token: String?){
         val editor = sharedPreferences.edit()
         editor.putString("token", token)
         editor.apply()
@@ -50,7 +73,7 @@ class SharedPreferencesManager(private val context: Context) {
     //Obtener Token
     fun getToken(): String{
         return  sharedPreferences.getString("token", "Empty").toString()
-    }
+    }*/
 
     fun saveTutorResponse(tutorRespuesta: ConfiAppApiService.LoginResponse?){
         val json = Gson().toJson(tutorRespuesta)
