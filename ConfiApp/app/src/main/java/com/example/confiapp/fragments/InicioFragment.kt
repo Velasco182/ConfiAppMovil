@@ -212,6 +212,8 @@ class InicioFragment : Fragment() {
         // Definir una longitud mínima de consulta para iniciar la búsqueda de autocompletado
         private var MIN_QUERY_LENGTH = 1
 
+
+
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val dialog = super.onCreateDialog(savedInstanceState)
 
