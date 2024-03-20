@@ -213,7 +213,6 @@ class InicioFragment : Fragment() {
         private var MIN_QUERY_LENGTH = 1
 
 
-
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val dialog = super.onCreateDialog(savedInstanceState)
 
@@ -424,24 +423,25 @@ class InicioFragment : Fragment() {
 
                 val geocoder = Geocoder(requireContext())
 
-                val originAddress = geocoder.getFromLocationName(puntoA, 1)?.firstOrNull()
-                val originCoordinates = originAddress?.let { LatLng(it.latitude, it.longitude) }
+                originCoordinates = geocoder.getFromLocationName(puntoA, 1)?.firstOrNull()?.let {
+                    LatLng(it.latitude, it.longitude)
+                }
 
-                val destinationAddress = geocoder.getFromLocationName(puntoB, 1)?.firstOrNull()
-                val destinationCoordinates =
-                    destinationAddress?.let { LatLng(it.latitude, it.longitude) }
+                destinationCoordinates =
+                    geocoder.getFromLocationName(puntoB, 1)?.firstOrNull()?.let {
+                        LatLng(it.latitude, it.longitude)
+                    }
 
                 // Acción cuando se hace clic en Aceptar
                 if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
 
 
                     if (originCoordinates != null) {
-                        if (destinationCoordinates != null) {
+                        destinationCoordinates?.let {
                             saveRouteToFirebase(
                                 puntoA,
                                 puntoB,
-                                originCoordinates,
-                                destinationCoordinates
+                                originCoordinates!!, it
                             )
                         }
                     }
@@ -488,9 +488,9 @@ class InicioFragment : Fragment() {
                     ) {
                         if (response.isSuccessful) {
                             val route = response.body()?.routes?.firstOrNull()
-                            if (route != null) {
+                            if (route?.overviewPolyline != null) {
                                 // Dibuja la ruta en el mapa
-                                drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
+                                drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath ?: ""))
 
                                 // Agrega marcadores en el inicio y final de la ruta
                                 val originMarker =
