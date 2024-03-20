@@ -31,6 +31,7 @@ import com.example.confiapp.models.InicioItem
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -198,6 +199,9 @@ class InicioFragment : Fragment() {
 
         // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
         private lateinit var map: GoogleMap
+
+        private lateinit var mapView: MapView
+
         private lateinit var placesClient: PlacesClient
         private lateinit var autoCompleteAdapterA: ArrayAdapter<String>
         private lateinit var autoCompleteAdapterB: ArrayAdapter<String>
@@ -205,6 +209,9 @@ class InicioFragment : Fragment() {
         private var placeA: String? = null
         private var placeB: String? = null
 
+        // Declarar variables para almacenar las coordenadas de origen y destino
+        private var originCoordinates: LatLng? = null
+        private var destinationCoordinates: LatLng? = null
 
         // Definir una longitud mínima de consulta para iniciar la búsqueda de autocompletado
         private var MIN_QUERY_LENGTH = 1
@@ -243,9 +250,10 @@ class InicioFragment : Fragment() {
 
             binding = CrearMapaDialogLayoutBinding.bind(view)
 
-            val mapFragment =
+            val mapView =
                 childFragmentManager.findFragmentById(R.id.fragmentContainer) as SupportMapFragment
-            mapFragment.getMapAsync(this)
+            mapView.onCreate(savedInstanceState)
+            mapView.getMapAsync(this)
 
             // Inicializa la API de Google Places
             Places.initialize(requireContext(), "AIzaSyAFwVvdV2JmsSzik6Dx5M17hoewBKEakoY")
@@ -395,16 +403,18 @@ class InicioFragment : Fragment() {
             })
 
             // Configurar el listener para el AutoCompleteTextView
-            origin.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-                // Obtener el texto seleccionado
-                placeA = parent.getItemAtPosition(position).toString()
-            }
+            origin.onItemClickListener =
+                AdapterView.OnItemClickListener { parent, view, position, id ->
+                    // Obtener el texto seleccionado
+                    placeA = parent.getItemAtPosition(position).toString()
+                }
 
             // Configurar el listener para el AutoCompleteTextView
-            destination.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-                // Obtener el texto seleccionado
-                placeB = parent.getItemAtPosition(position).toString()
-            }
+            destination.onItemClickListener =
+                AdapterView.OnItemClickListener { parent, view, position, id ->
+                    // Obtener el texto seleccionado
+                    placeB = parent.getItemAtPosition(position).toString()
+                }
 
             //Toast.makeText(requireContext(), "Ruta Creada, $puntoA", Toast.LENGTH_SHORT).show()
 
@@ -415,41 +425,81 @@ class InicioFragment : Fragment() {
                 val puntoA = origin.text.toString()
                 val puntoB = destination.text.toString()
 
+                val geocoder = Geocoder(requireContext())
+
+                val originAddress = geocoder.getFromLocationName(puntoA, 1)?.firstOrNull()
+                val originCoordinates = originAddress?.let { LatLng(it.latitude, it.longitude) }
+
+                val destinationAddress = geocoder.getFromLocationName(puntoB, 1)?.firstOrNull()
+                val destinationCoordinates =
+                    destinationAddress?.let { LatLng(it.latitude, it.longitude) }
+
                 // Acción cuando se hace clic en Aceptar
                 if (puntoA.isNotBlank() && puntoB.isNotBlank()) {
 
-                    saveRouteToFirebase(puntoA, puntoB)
-                    //searchRoute(puntoA, puntoB)
+                    //if (originCoordinates != null) {
+
+                    //if (destinationCoordinates != null) {
+
+                    placeB?.let { it1 ->
+                        placeA?.let { it2 ->
+                            saveRouteToFirebase(
+                                it2,
+                                it1,
+                                originCoordinates,
+                                destinationCoordinates
+                            )
+                        }
+                    }
+                    //}
+                    //}
+
+                    placeA?.let { it1 ->
+                        placeB?.let { it2 ->
+                            searchRoute(
+                                it1,
+                                it2,
+                                originCoordinates,
+                                destinationCoordinates
+                            )
+                        }
+                    }//
+
+                    //Log.w(
+                    //                        "validación",
+                    //                        "$placeA, $originCoordinates y $placeB, $destinationCoordinates"
+                    //                    )
+
+                    Toast.makeText(requireContext(), "Ruta Creada, $placeA", Toast.LENGTH_SHORT)
+                        .show()
+                    Toast.makeText(requireContext(), "Ruta Creada, $placeB", Toast.LENGTH_SHORT)
+                        .show()
+
+                    //dismiss() // Cancela la acción
                 }
-
-                //
-                Log.w("validación", "$placeA, $placeB")
-                Toast.makeText(requireContext(), "Ruta Creada, $placeA", Toast.LENGTH_SHORT).show()
-                Toast.makeText(requireContext(), "Ruta Creada, $placeB", Toast.LENGTH_SHORT).show()
-
-                //dismiss() // Cancela la acción
-
             }
         }
 
         override fun onMapReady(googleMap: GoogleMap) {
             map = googleMap
+
+            val location = LatLng(2.4449261743007327, -76.6001259041013)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12f))
         }
 
-        private fun searchRoute(origin: String, destination: String) {
-            val geocoder = Geocoder(requireContext())
 
-            val originAddress = geocoder.getFromLocationName(origin, 1)?.firstOrNull()
-            val originCoordinates = originAddress?.let { LatLng(it.latitude, it.longitude) }
-
-            val destinationAddress = geocoder.getFromLocationName(destination, 1)?.firstOrNull()
-            val destinationCoordinates =
-                destinationAddress?.let { LatLng(it.latitude, it.longitude) }
+        private fun searchRoute(
+            origin: String,
+            destination: String,
+            originCoordinates: LatLng?,
+            destinationCoordinates: LatLng?
+        ) {
 
             Log.e("origin", originCoordinates.toString())
             Log.e("destination", destinationCoordinates.toString())
 
             if (originCoordinates != null && destinationCoordinates != null) {
+
                 val retrofit = Retrofit.Builder()
                     .baseUrl("https://maps.googleapis.com/")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -468,16 +518,36 @@ class InicioFragment : Fragment() {
                         call: Call<DirectionsResponse>,
                         response: Response<DirectionsResponse>
                     ) {
-                        if (response.isSuccessful) {
-                            val route = response.body()?.routes?.firstOrNull()
-                            if (route != null) {
+                        if (response.body()?.routes?.isNotEmpty() == true) {
 
-                                // Dibuja la ruta en el mapa
+                            val route = response.body()?.routes?.first()
+
+                            if (route?.overviewPolyline != null) {
+
+                                Log.e("route", "$route")
+
+
+
+                                /*route.overviewPolyline.let {
+                                    val encodedPath = it.encodedPath
+
+                                    // Dibuja la ruta en el mapa
+                                    drawRoute(PolyUtil.decode(encodedPath))
+
+
+                                } ?: run {
+                                    Log.e("poly", "$route")
+                                }*/
+
                                 drawRoute(PolyUtil.decode(route.overviewPolyline.encodedPath))
 
                                 // Agrega marcadores en el inicio y final de la ruta
-                                val originMarker = MarkerOptions().position(originCoordinates).title("Origen")
-                                val destinationMarker = MarkerOptions().position(destinationCoordinates).title("Destino")
+                                val originMarker =
+                                    MarkerOptions().position(originCoordinates).title(origin)
+                                val destinationMarker =
+                                    MarkerOptions().position(destinationCoordinates)
+                                        .title(destination)
+
                                 map.addMarker(originMarker)
                                 map.addMarker(destinationMarker)
 
@@ -490,7 +560,8 @@ class InicioFragment : Fragment() {
 
                                 val bounds = boundsBuilder.build()
                                 val padding = 100 // Margen en píxeles alrededor de la ruta
-                                val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                                val cameraUpdate =
+                                    CameraUpdateFactory.newLatLngBounds(bounds, padding)
                                 map.animateCamera(cameraUpdate)
 
                             } else {
@@ -500,6 +571,15 @@ class InicioFragment : Fragment() {
                                     "No se encontró una ruta",
                                     Toast.LENGTH_SHORT
                                 ).show()
+
+                                Log.e("route", "$route")
+                                Log.e("json", "$call")
+
+                                Log.w(
+                                    "validación",
+                                    "$placeA, $originCoordinates y $placeB, $destinationCoordinates"
+                                )
+
                             }
                         } else {
                             // Manejo de errores
@@ -524,10 +604,11 @@ class InicioFragment : Fragment() {
 
 
         private fun drawRoute(routePoints: List<LatLng>) {
-            val polylineOptions = PolylineOptions()
-                .addAll(routePoints)
-                .color(Color.RED)
-                .width(5f)
+            val polylineOptions = PolylineOptions().apply {
+                addAll(routePoints)
+                color(Color.RED)
+                width(5f)
+            }
 
             map.addPolyline(polylineOptions)
         }
@@ -535,8 +616,8 @@ class InicioFragment : Fragment() {
         private fun saveRouteToFirebase(
             origin: String,
             destination: String,
-            //originCoordinates: LatLng,
-            //destinationCoordinates: LatLng
+            originCoordinates: LatLng?,
+            destinationCoordinates: LatLng?
         ) {
             val database = FirebaseDatabase.getInstance()
             val reference = database.getReference("rutas")
@@ -544,8 +625,8 @@ class InicioFragment : Fragment() {
             val nuevaRuta = mapOf<String, Any>(
                 "origen" to origin,
                 "destino" to destination,
-                //"originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
-                //"destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
+                "originCoordinates" to originCoordinates.toString(), // Convertimos LatLng a String
+                "destinationCoordinates" to destinationCoordinates.toString() // Convertimos LatLng a String
                 // Aquí podemos agregar más campos de la ruta si es necesario
             )
 

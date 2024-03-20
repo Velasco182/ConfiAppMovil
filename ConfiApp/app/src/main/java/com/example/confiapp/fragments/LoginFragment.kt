@@ -87,6 +87,10 @@ class LoginFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        /*if(validar()){
+            updateUI(auth.currentUser)
+        }*/
+
         // Check if user is signed in (non-null) and update UI accordingly.
         var currentUser = auth.getCurrentUser()
         updateUI(currentUser)
@@ -265,12 +269,12 @@ class LoginFragment : Fragment() {
 
         //Validar existencia del token
 
-        /*if (validar()) {
+        if (validar()) {
 
             val intent = Intent(activity, MainActivity::class.java)
             startActivity(intent)
 
-        }*/
+        }
     }
 
     private fun validar() : Boolean{
@@ -297,7 +301,7 @@ class LoginFragment : Fragment() {
             ) {
                 if (response.isSuccessful) {
                     // Si la respuesta es exitosa
-                    sharedPre.saveBool()
+                    //sharedPre.saveBool()
 
                     val result = response.body()
 
@@ -305,6 +309,7 @@ class LoginFragment : Fragment() {
                     val header = response.headers()
 
                     Log.w("headers", "$header")
+                    Log.w("token", "$userToken")
 
                     Toast.makeText(
                         requireContext(),
