@@ -211,13 +211,13 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
         android:clickable="true"
+        android:contentDescription="Agregar Ruta"
+        android:focusable="true"
         android:src="@drawable/baseline_add_location_24"
         app:backgroundTint="@color/primary"
         app:borderWidth="4dp"
-        app:elevation="16dp"
+        app:elevation="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="Agregar Ruta"
-        android:focusable="true" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
