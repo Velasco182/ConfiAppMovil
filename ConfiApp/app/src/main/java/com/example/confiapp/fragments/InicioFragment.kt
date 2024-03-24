@@ -27,6 +27,7 @@ import com.example.confiapp.apiservice.googlemapsapi.DirectionsResponse
 import com.example.confiapp.apiservice.googlemapsapi.DirectionsService
 import com.example.confiapp.databinding.CrearMapaDialogLayoutBinding
 import com.example.confiapp.databinding.FragmentInicioBinding
+import com.example.confiapp.fragments.dialogs.CrearRutaDialogFragment
 import com.example.confiapp.models.InicioItem
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -75,7 +76,7 @@ class InicioFragment : Fragment() {
 
         botonflotante.setOnClickListener {
             // Crea y muestra el diálogo cuando se hace clic en el botón
-            val dialogFragment = MapsDialogFragment()
+            val dialogFragment = CrearRutaDialogFragment()
             dialogFragment.show(parentFragmentManager, "maps_dialog")
 
 
@@ -194,7 +195,7 @@ class InicioFragment : Fragment() {
     }
 
 
-    class MapsDialogFragment : DialogFragment(), OnMapReadyCallback {
+    /*class MapsDialogFragment : DialogFragment(), OnMapReadyCallback {
         private lateinit var binding: CrearMapaDialogLayoutBinding
 
         // CREAR VARIABLE PARA ALMACENAR EL MAPA CUANDO CARGUE
@@ -655,6 +656,6 @@ class InicioFragment : Fragment() {
             }
         }
 
-    }
+    }*/
 
 }

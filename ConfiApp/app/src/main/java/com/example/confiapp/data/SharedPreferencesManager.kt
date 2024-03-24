@@ -129,9 +129,14 @@ class SharedPreferencesManager(private val context: Context) {
 
     fun logOut(){
         val cerrar = sharedPreferences.edit()
+
+        val cerrarEncrypt = sharedPreferencesEncrypted.edit()
+
         cerrar.clear()
         cerrar.apply()
 
+        cerrarEncrypt.clear()
+        cerrarEncrypt.apply()
         ///Cerrar sesión de google
         //Firebase.auth.signOut()
     }
