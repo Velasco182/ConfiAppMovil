@@ -305,8 +305,10 @@ class LoginFragment : Fragment() {
 
                     val result = response.body()
 
-                    userToken = response.body()?.token
+                    userToken = result?.token
                     val header = response.headers()
+
+                    //sharedPre.saveToken(userToken)
 
                     Log.w("headers", "$header")
                     Log.w("token", "$userToken")
@@ -370,7 +372,7 @@ class LoginFragment : Fragment() {
 
 
     private fun tokenValidation(userToken: String?): Boolean {
-        return userToken != null && userToken.isNotEmpty()
+        return !userToken.isNullOrEmpty()
     }
 
 }

@@ -61,6 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nombre del Tutor"
+            android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -90,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Edad"
+                android:text="Identificación"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -153,7 +154,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/emailTextView" />
 
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/identificacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -168,9 +169,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Calle tales"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/addressTextView"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintEnd_toEndOf="@+id/identificacion"
+                app:layout_constraintStart_toStartOf="@+id/identificacion"
+                app:layout_constraintTop_toBottomOf="@+id/identificacion" />
 
             <TextView
                 android:id="@+id/direccion"
@@ -178,8 +179,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Calle 10"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/emailTextView"
+                app:layout_constraintEnd_toEndOf="@+id/nacionalidad"
+                app:layout_constraintStart_toStartOf="@+id/nacionalidad"
                 app:layout_constraintTop_toBottomOf="@+id/nacionalidad" />
 
             <TextView
@@ -188,8 +189,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Profesor"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/professionTextView"
+                app:layout_constraintEnd_toEndOf="@+id/direccion"
+                app:layout_constraintStart_toStartOf="@+id/direccion"
                 app:layout_constraintTop_toBottomOf="@+id/direccion" />
 
             <TextView
@@ -198,8 +199,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="juanisto@asdsadsa"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/emailTextView"
+                app:layout_constraintEnd_toEndOf="@+id/profesion"
+                app:layout_constraintStart_toStartOf="@+id/profesion"
                 app:layout_constraintTop_toBottomOf="@+id/profesion" />
 
             <TextView
@@ -210,8 +211,8 @@
                 android:layout_marginBottom="16dp"
                 android:text="11613131"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/numberTextView"
+                app:layout_constraintEnd_toEndOf="@+id/correo"
+                app:layout_constraintStart_toStartOf="@+id/correo"
                 app:layout_constraintTop_toBottomOf="@+id/correo" />
 
 

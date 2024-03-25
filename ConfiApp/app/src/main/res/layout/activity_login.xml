@@ -5,13 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="8dp"
     android:orientation="vertical"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/inicioSesion"
         tools:context=".controllers.LoginActivity">
 
@@ -46,20 +45,19 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/indicador"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="40dp"
             android:layout_marginTop="48dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
             app:tabIndicator="@drawable/tab_indicator"
             app:tabIndicatorAnimationMode="elastic"
-            app:tabIndicatorColor="@null"
             app:tabIndicatorGravity="stretch"
             app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/primary">
+            app:tabSelectedTextColor="@color/black">
             <!--app:tabTextColor="@color/material_dynamic_neutral_variant30"-->
 
 
@@ -87,17 +85,47 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/indicador">-->
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/loginViewPager"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/indicador"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:background="@drawable/buttom_primary_style"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/indicador" />
+            app:layout_constraintTop_toBottomOf="@+id/indicador">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/loginViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/indicador"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/indicador" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/faq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAlignment="center"
+            android:fillColor="@android:color/secondary_text_light_nodisable"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:focusableInTouchMode="true"
+            android:text="F.A.Q"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView10" />
 
         <!--</ScrollView>-->
 

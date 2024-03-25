@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +16,23 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.confiapp.R
+import com.example.confiapp.apiservice.ConfiAppApiClient
+import com.example.confiapp.apiservice.ConfiAppApiManager
+import com.example.confiapp.data.SharedPreferencesManager
 import com.example.confiapp.databinding.EditarPerfilDialogLayoutBinding
 import com.example.confiapp.databinding.RegistroMenorDialogLayoutBinding
+import com.example.confiapp.models.TutorItem
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EditarPerfilDialogFragment : DialogFragment() {
 
     private  lateinit var binding: EditarPerfilDialogLayoutBinding
+
+    private lateinit var apiManager: ConfiAppApiManager
+
+    private lateinit var sharedPre: SharedPreferencesManager
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
 
@@ -54,22 +66,13 @@ class EditarPerfilDialogFragment : DialogFragment() {
 
         binding = EditarPerfilDialogLayoutBinding.bind(view)
 
-        val nombreTutorInputE = binding.nombreTutorInputE
-        val apellidoTutorInputE = binding.apellidoTutorInputE
+        //SharedPreferences
+        sharedPre = SharedPreferencesManager(requireContext())
 
-        /*///Configuración Spinner
-        val tipoDocumentoMenor = view.findViewById<Spinner>(R.id.tipoDocumentoMenorList)
-        // Datos de ejemplo para el Spinner
-        val items = arrayOf("Tarjeta de Identidad", "Registro Civil")
-        // Crear un adaptador para el Spinner
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, items)
-        // Asignar el adaptador al Spinner
-        tipoDocumentoMenor.adapter = adapter*/
+        //Retofit
+        apiManager = ConfiAppApiManager(ConfiAppApiClient.createApiService())
 
-        val numeroDocumentoTutorInputE = binding.numeroDocumentoTutorInputE
-        val edadTutorInputE = binding.edadTutorInputE
-        val telefonoTutorInputE = binding.telefonoTutorInputE
-        val correoTutorInputE = binding.correoTutorInputE
+        userProfile()
 
         //val confirmarRegistroMenor = dialogLayout.findViewById<EditText>(R.id.confirmarRegistroMenorButton)
 
@@ -78,18 +81,67 @@ class EditarPerfilDialogFragment : DialogFragment() {
             // Acción cuando se hace clic en Aceptar
 
 
-            val nombreM = nombreTutorInputE.text.toString()
-            val apellidoM = apellidoTutorInputE.text.toString()
+            /*val nombreM = nombreTutorInputE.toString()
+            val apellidoM = apellidoTutorInputE.toString()
 
 
-            val numeroDocumentoM = numeroDocumentoTutorInputE.text.toString()
-            val edadM = edadTutorInputE.text.toString()
-            val telefonoM = telefonoTutorInputE.text.toString()
-            val correoM = correoTutorInputE.text.toString()
+            val numeroDocumentoM = numeroDocumentoTutorInputE.toString()
+            val edadM = edadTutorInputE.toString()
+            val telefonoM = telefonoTutorInputE.toString()
+            val correoM = correoTutorInputE.toString()*/
 
             dismiss() // Cancela la acción
             Toast.makeText(context, "Menor Guardado", Toast.LENGTH_SHORT).show()
             //dismiss()  Cierra el diálogo
         }
+    }
+
+    fun userProfile(){
+
+        val token = sharedPre.getToken()
+
+        if (token != null) {
+
+            apiManager.mostrarPerfil(token, object : Callback<TutorItem> {
+                override fun onResponse(call: Call<TutorItem>, response: Response<TutorItem>) {
+                    if (response.isSuccessful){
+                        val userData = response.body()
+
+                        Log.w("userData", "$userData")
+
+                        val nombres = userData?.nombres
+                        val apellidos = userData?.apellidos
+                        val email = userData?.email
+                        val telefono = userData?.telefono
+                        val identificacion = userData?.numerodeIdentificacion
+
+                        binding.nombreTutorInputE.setText(nombres)
+                        binding.apellidoTutorInputE.setText(apellidos)
+
+                        binding.numeroDocumentoTutorInputE.setText(identificacion)
+                        //binding.edadTutorInputE.text =
+                        binding.telefonoTutorInputE.setText(telefono)
+                        binding.correoTutorInputE.setText(email)
+
+                    }else{
+
+                        Toast.makeText(requireContext(), "Token inválido", Toast.LENGTH_SHORT).show()
+
+                    }
+                }
+
+                override fun onFailure(call: Call<TutorItem>, t: Throwable) {
+                    Log.w("userData", "Error: ${t.message}")
+                }
+
+
+            })
+
+        }else{
+
+            Toast.makeText(requireContext(), "Token no disponible", Toast.LENGTH_SHORT).show()
+
+        }
+
     }
 }

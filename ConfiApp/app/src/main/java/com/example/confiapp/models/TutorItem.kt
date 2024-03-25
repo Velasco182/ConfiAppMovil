@@ -1,7 +1,7 @@
 package com.example.confiapp.models
 
 data class TutorItem(
-    val username: String,
+    //val id: String,
     val nombres: String,
     val apellidos: String,
     //val edad: String, val id: Int, val nacionalidad: String, val direccion: String, val profesion: String,

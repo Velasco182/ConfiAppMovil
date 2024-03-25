@@ -13,6 +13,10 @@ class ConfiAppApiManager(private val apiService: ConfiAppApiService) {
         apiService.postTutor(userDataList).enqueue(callback)
     }
 
+    fun mostrarPerfil(token: String, callback: Callback<TutorItem>) {
+        apiService.getUserProfile(token).enqueue(callback)
+    }
+
     fun insertarLogin(userDataList: TutorLoginItem, callback: Callback<ConfiAppApiService.LoginResponse>){
         apiService.postTutorLogin(userDataList).enqueue(callback)
     }

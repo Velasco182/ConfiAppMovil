@@ -7,6 +7,7 @@ import com.example.confiapp.models.TutorLoginItem
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ConfiAppApiService {
@@ -33,6 +34,9 @@ interface ConfiAppApiService {
 
     @POST("register")
     fun postTutor(@Body tutor: TutorItem): Call<ResponseApi> // Ajuste para usar Call
+
+    @GET("profile")
+    fun getUserProfile(@Header("Authorization") token: String): Call<TutorItem>
 
     @POST("login")
     fun postTutorLogin(@Body tutorLogin: TutorLoginItem): Call<LoginResponse>

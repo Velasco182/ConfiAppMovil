@@ -106,70 +106,81 @@ class RegistroFragment : Fragment() {
         val password = binding.contrasenaInput.text.toString()
         val nidentificacion = binding.numeroDocumentoInput.text.toString()
 
+        val contrasena = binding.confirmarCInput.text.toString()
+
         //val data = TutorItem(nombre, apellido, email, telefono, password, "cedula", nidentificacion)
 
-        val data = TutorItem(
-            "user",
-            nombre,
-            apellido,
-            email,
-            telefono,
-            password,
-            "cedula",
-            nidentificacion
-        )
+        if (password == contrasena){
 
-        // Ahora llamamos a insertarDatos con un callback
-        apiManager.insertarDatos(data, object : Callback<ConfiAppApiService.ResponseApi> {
-            override fun onResponse(
-                call: Call<ConfiAppApiService.ResponseApi>,
-                response: Response<ConfiAppApiService.ResponseApi>
-            ) {
-                if (response.isSuccessful) {
-                    // Si la respuesta es exitosa
-                    val result = response.body()
-                    Toast.makeText(
-                        requireContext(),
-                        "Datos insertados correctamente: $result",
-                        Toast.LENGTH_SHORT
-                    ).show()
+            val data = TutorItem(
+                nombre,
+                apellido,
+                email,
+                telefono,
+                password,
+                "cedula",
+                nidentificacion
+            )
 
-                    activity?.runOnUiThread {
-                        // Tu código para limpiar y navegar aquí
+            // Ahora llamamos a insertarDatos con un callback
+            apiManager.insertarDatos(data, object : Callback<ConfiAppApiService.ResponseApi> {
+                override fun onResponse(
+                    call: Call<ConfiAppApiService.ResponseApi>,
+                    response: Response<ConfiAppApiService.ResponseApi>
+                ) {
+                    if (response.isSuccessful) {
+                        // Si la respuesta es exitosa
+                        val result = response.body()
+                        Toast.makeText(
+                            requireContext(),
+                            "Datos insertados correctamente: $result",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                        binding.nombreInput.text?.clear()
-                        binding.apellidoInput.text?.clear()
-                        binding.numeroDocumentoInput.text?.clear()
-                        binding.edadInput.text?.clear()
-                        binding.telefonoInput.text?.clear()
-                        binding.correoInput.text?.clear()
-                        binding.contrasenaInput.text?.clear()
-                        binding.confirmarCInput.text?.clear()
+                        activity?.runOnUiThread {
+                            // Tu código para limpiar y navegar aquí
 
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
-                        startActivity(intent)
-                        activity?.finish()
+                            binding.nombreInput.text?.clear()
+                            binding.apellidoInput.text?.clear()
+                            binding.numeroDocumentoInput.text?.clear()
+                            binding.edadInput.text?.clear()
+                            binding.telefonoInput.text?.clear()
+                            binding.correoInput.text?.clear()
+                            binding.contrasenaInput.text?.clear()
+                            binding.confirmarCInput.text?.clear()
+
+                            val intent = Intent(requireContext(), LoginActivity::class.java)
+                            startActivity(intent)
+                            activity?.finish()
+                        }
+
+                    } else {
+                        // Si obtenemos una respuesta del servidor pero no es exitosa (p.ej., error 404, 500)
+                        Toast.makeText(
+                            requireContext(),
+                            "Respuesta no exitosa: ${response.errorBody()?.string()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                }
 
-                } else {
-                    // Si obtenemos una respuesta del servidor pero no es exitosa (p.ej., error 404, 500)
+                override fun onFailure(call: Call<ConfiAppApiService.ResponseApi>, t: Throwable) {
+                    // Error al realizar la llamada (p.ej., sin conexión)
                     Toast.makeText(
                         requireContext(),
-                        "Respuesta no exitosa: ${response.errorBody()?.string()}",
+                        "Error al insertar datos: ${t.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
+            })
 
-            override fun onFailure(call: Call<ConfiAppApiService.ResponseApi>, t: Throwable) {
-                // Error al realizar la llamada (p.ej., sin conexión)
-                Toast.makeText(
-                    requireContext(),
-                    "Error al insertar datos: ${t.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
+        }else{
+            Toast.makeText(
+                requireContext(),
+                "Los campos de contraseña deben coincidir",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
     }
 
