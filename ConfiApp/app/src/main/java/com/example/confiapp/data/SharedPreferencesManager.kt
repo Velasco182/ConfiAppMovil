@@ -2,14 +2,19 @@ package com.example.confiapp.data
 
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.confiapp.apiservice.ConfiAppApiService
+import com.example.confiapp.controllers.LoginActivity
 import com.example.confiapp.models.TutorRespuesta
+import com.google.crypto.tink.shaded.protobuf.InvalidProtocolBufferException
 import com.google.gson.Gson
+import java.io.IOException
 
 class SharedPreferencesManager(private val context: Context) {
 
@@ -20,19 +25,23 @@ class SharedPreferencesManager(private val context: Context) {
         context.getSharedPreferences(name_DB, Context.MODE_PRIVATE)
     }
 
-    private val sharedPreferencesEncrypted: SharedPreferences
+    private val sharedPreferencesEncrypted: SharedPreferences by lazy {
+        try {
+            val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
-    init {
-        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-
-        sharedPreferencesEncrypted = EncryptedSharedPreferences.create(
-            "token-encrypted",
-            masterKey,
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+            EncryptedSharedPreferences.create(
+                "token-encrypted",
+                masterKey,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error inicializando SharedPreferences encriptadas", e)
+            throw e
+        }
     }
+
 
     fun saveToken(token: String?) {
         sharedPreferencesEncrypted.edit().putString("userToken", token).apply()
@@ -73,7 +82,7 @@ class SharedPreferencesManager(private val context: Context) {
     //Obtener Token
     fun getToken(): String{
         return  sharedPreferences.getString("token", "Empty").toString()
-    }*/
+    }
 
     fun saveTutorResponse(tutorRespuesta: ConfiAppApiService.LoginResponse?){
         val json = Gson().toJson(tutorRespuesta)
@@ -99,7 +108,7 @@ class SharedPreferencesManager(private val context: Context) {
             return gson.fromJson(json, ConfiAppApiService.LoginResponse::class.java)
         }
         return null
-    }
+    }*/
 
     fun saveBool(){
         val editor = sharedPreferences.edit()
